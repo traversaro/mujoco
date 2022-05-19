@@ -74,10 +74,34 @@ platform, please let us know via [GitHub Issues] or
 
 ## Documentation
 
-MuJoco's current documentation is available at [mujoco.org/book], which is
+MuJoCo's current documentation is available at [mujoco.readthedocs.io], which is
 serving Sphinx-based webpages derived from the ReStructuredText
 [documentation source files].
 
+## Getting Started
+
+There are two easy ways to get started with MuJoCo:
+
+1. **Run `simulate` on your machine.**
+[This video](https://www.youtube.com/watch?v=0ORsj_E17B0) shows a
+screen capture of `simulate`, MuJoCo's native interactive viewer.
+Follow the steps described in the
+[Getting Started](https://mujoco.readthedocs.io/en/latest/programming.html#getting-started)
+section of the documentation to get `simulate` running locally on your machine.
+
+2. **Explore our online IPython notebooks.**
+If you are a Python user, you might want to start with our tutorial notebooks,
+running on Google Colab:
+
+  - The first tutorial focuses on the basic MuJoco Python bindings:[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/deepmind/dm_control/blob/main/dm_control/mujoco/tutorial.ipynb).
+
+  - The second tutorial includes more examples of `dm_control`-specific functionality: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/deepmind/dm_control/blob/main/tutorial.ipynb).
+
+## Building from source
+
+Please consult [this section](https://mujoco.readthedocs.io/en/latest/programming.html#building-mujoco-from-source)
+in MuJoCo's documentation for general instructions on how to build MuJoCo from
+source.
 
 ## Citation
 
@@ -97,7 +121,10 @@ If you use MuJoCo for published research, please cite:
 
 ## License and Disclaimer
 
-Copyright 2021 DeepMind Technologies Limited
+Copyright 2021 DeepMind Technologies Limited.
+
+Box collision code ([`engine_collision_box.c`](https://github.com/deepmind/mujoco/tree/main/src/engine/engine_collision_box.c))
+is Copyright 2016 Svetoslav Kolev.
 
 ReStructuredText documents, images, and videos in the `doc` directory are made
 available under the terms of the Creative Commons Attribution 4.0 (CC BY 4.0)
@@ -112,4 +139,4 @@ This is not an officially supported Google product.
 
 [GitHub Issues]: https://github.com/deepmind/mujoco/issues
 [documentation source files]: https://github.com/deepmind/mujoco/tree/main/doc
-[mujoco.org/book]: https://mujoco.org/book
+[mujoco.readthedocs.io]: https://mujoco.readthedocs.io
