@@ -79,7 +79,7 @@ mjModel* LoadModelFromString(std::string_view xml, char* error, int error_size) 
   return m;
 }
 
-const std::string GetFileContents(std::string_view path) {
+const std::string GetFileContents(const char* path) {
   std::ifstream ifs;
   ifs.open(path, std::ifstream::in);
   EXPECT_FALSE(ifs.fail());
