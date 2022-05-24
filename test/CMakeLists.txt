@@ -47,6 +47,7 @@ target_link_libraries(
          absl::synchronization
          gtest
          gmock
+         mujoco::mujoco
 )
 target_include_directories(fixture PRIVATE ${mujoco_SOURCE_DIR}/include gmock)
 
