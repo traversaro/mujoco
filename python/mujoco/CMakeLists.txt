@@ -272,7 +272,7 @@ macro(mujoco_pybind11_module name)
   pybind11_add_module(${name} ${ARGN})
   target_compile_options(${name} PRIVATE ${AVX_COMPILE_OPTIONS})
   if(NOT MSVC)
-    target_compile_options(${name} PRIVATE -Wall -Werror)
+    target_compile_options(${name} PRIVATE -Wall)
     if(CMAKE_C_COMPILER_ID STREQUAL GNU)
       target_compile_options(
         ${name}
