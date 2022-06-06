@@ -79,6 +79,7 @@ set(BUILD_SHARED_LIBS
     CACHE INTERNAL "Build SHARED libraries"
 )
 
+find_package(lodepng REQUIRED)
 if(NOT TARGET lodepng)
   FetchContent_Declare(
     lodepng
