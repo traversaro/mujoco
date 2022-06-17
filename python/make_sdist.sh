@@ -28,8 +28,8 @@ else
   readonly tmp_dir="$(mktemp -d)"
 fi
 
-python -m pip install --upgrade pip setuptools
-python -m pip install absl-py
+# python -m pip install --upgrade pip setuptools
+# python -m pip install absl-py
 pushd ${tmp_dir}
 cp -r "${package_dir}"/* .
 
