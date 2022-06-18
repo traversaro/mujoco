@@ -22,7 +22,7 @@ import subprocess
 
 _SYSTEM = platform.system()
 if _SYSTEM == 'Windows':
-  ctypes.WinDLL(os.path.join(os.path.dirname(__file__), 'mujoco.dll'))
+  ctypes.WinDLL('mujoco.dll')
 
 from mujoco._callbacks import *
 from mujoco._constants import *
