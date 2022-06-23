@@ -240,7 +240,7 @@ class BuildCMakeExtension(build_ext.build_ext):
 
     print('Building all extensions with CMake')
     subprocess.check_call(
-        [cmake, '--build', '.', f'-j{os.cpu_count()}', '--config', build_cfg],
+        [cmake, '--build', '.', f'-j1', '--config', build_cfg],
         cwd=self.build_temp)
 
   def build_extension(self, ext):
