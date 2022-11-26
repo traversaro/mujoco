@@ -14,7 +14,7 @@
 
 if(APPLE)
   # 10.12 is the oldest version of macOS that supports C++17, launched 2016.
-  set(MUJOCO_MACOSX_VERSION_MIN 10.12)
+  set(MUJOCO_MACOSX_VERSION_MIN 10.14)
 
   # We are setting the -mmacosx-version-min compiler flag directly rather than using the
   # CMAKE_OSX_DEPLOYMENT_TARGET variable since we do not want to affect choice of SDK,
