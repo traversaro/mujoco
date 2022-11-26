@@ -22,7 +22,7 @@ import subprocess
 
 _SYSTEM = platform.system()
 if _SYSTEM == 'Windows':
-  ctypes.WinDLL(os.path.join(os.path.dirname(__file__), 'mujoco.dll'))
+  ctypes.WinDLL('mujoco.dll'))
 
 from mujoco._callbacks import *
 from mujoco._constants import *
@@ -53,8 +53,13 @@ if _MUJOCO_GL not in ('disable', 'disabled', 'off', 'false', '0'):
   else:
     from mujoco.glfw import GLContext
 
-HEADERS_DIR = os.path.join(os.path.dirname(__file__), 'include/mujoco')
-PLUGINS_DIR = os.path.join(os.path.dirname(__file__), 'plugin')
+if _SYSTEM == 'Windows':
+  _MJ_INSTALL_DIR = os.path.join(os.environ.get('CONDA_PREFIX'), 'Library')
+else:
+  _MJ_INSTALL_DIR = os.environ.get('CONDA_PREFIX')
+
+HEADERS_DIR = os.path.join(_MJ_INSTALL_DIR, 'include/mujoco')
+PLUGINS_DIR = os.path.join(_MJ_INSTALL_DIR, 'bin/mujoco_plugin')
 
 PLUGIN_HANDLES = []
 
