@@ -39,3 +39,10 @@ target_link_options(
   ${MUJOCO_MACOS_LINK_OPTIONS}
   ${EXTRA_LINK_OPTIONS}
 )
+
+if(MUJOCO_INSTALL_PLUGINS)
+  install(TARGETS cable
+          ARCHIVE DESTINATION "${CMAKE_INSTALL_BINDIR}/mujoco_plugin"
+          LIBRARY DESTINATION "${CMAKE_INSTALL_BINDIR}/mujoco_plugin"
+          RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}/mujoco_plugin")
+endif()
