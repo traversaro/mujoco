@@ -79,6 +79,7 @@ if(MUJOCO_HARDEN)
   endif()
 endif()
 
+find_package(lodepng REQUIRED)
 # Fetch lodepng dependency.
 if(NOT TARGET lodepng)
   FetchContent_Declare(
