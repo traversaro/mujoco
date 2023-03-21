@@ -159,9 +159,9 @@ class BuildCMakeExtension(build_ext.build_ext):
       assert ext.name.startswith(EXT_PREFIX)
       assert '.' not in ext.name[len(EXT_PREFIX):]
       self.build_extension(ext)
-    self._copy_external_libraries()
-    self._copy_mujoco_headers()
-    self._copy_plugin_libraries()
+    # self._copy_external_libraries()
+    # self._copy_mujoco_headers()
+    # self._copy_plugin_libraries()
     if self._is_apple:
       self._copy_mjpython()
 
