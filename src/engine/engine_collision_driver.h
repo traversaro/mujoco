@@ -24,6 +24,7 @@
 
 #pragma message(STRING(_MSC_VER))
 #pragma message(STRING(_MSC_FULL_VER))
+#pragma message(STRING(__STDC_VERSION__))
 
 #ifdef __cplusplus
 extern "C" {
