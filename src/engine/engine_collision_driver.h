@@ -23,6 +23,7 @@
 #define STRING(x) STRING2(x)
 
 #pragma message(STRING(_MSC_VER))
+#pragma message(STRING(_MSC_FULL_VER))
 
 #ifdef __cplusplus
 extern "C" {
