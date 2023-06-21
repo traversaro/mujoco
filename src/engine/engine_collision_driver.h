@@ -19,6 +19,11 @@
 #include <mujoco/mjexport.h>
 #include <mujoco/mjmodel.h>
 
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+
+#pragma message(STRING(_MSC_VER))
+
 #ifdef __cplusplus
 extern "C" {
 #elif !defined(__STDC_VERSION__) || __STDC_VERSION__ < 201112L
