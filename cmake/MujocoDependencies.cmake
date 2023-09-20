@@ -219,26 +219,6 @@ findorfetch(
   EXCLUDE_FROM_ALL
 )
 
-findorfetch(
-  USE_SYSTEM_PACKAGE
-  OFF
-  PACKAGE_NAME
-  sdflib
-  LIBRARY_NAME
-  sdflib
-  GIT_REPO
-  https://github.com/UPC-ViRVIG/SdfLib.git
-  GIT_TAG
-  ${MUJOCO_DEP_VERSION_sdflib}
-  PATCH_COMMAND
-  git apply --reject --whitespace=fix ${mujoco_SOURCE_DIR}/cmake/sdflib-optional-dependencies.patch
-  TARGETS
-  SdfLib
-  EXCLUDE_FROM_ALL
-)
-target_compile_options(SdfLib PRIVATE ${MUJOCO_MACOS_COMPILE_OPTIONS})
-target_link_options(SdfLib PRIVATE ${MUJOCO_MACOS_LINK_OPTIONS})
-
 if(MUJOCO_USE_SYSTEM_tinyobjloader)
   # As of tinyobjloader v2.0.0rc10, the tinyobjloader target is named tinyobjloader in the build,
   # but tinyobjloader::tinyobjloader when it is installed. To deal with this, if tinyobjloader is
@@ -248,6 +228,32 @@ if(MUJOCO_USE_SYSTEM_tinyobjloader)
   # the simpler version
   add_library(tinyobjloader INTERFACE IMPORTED)
   set_target_properties(tinyobjloader PROPERTIES INTERFACE_LINK_LIBRARIES tinyobjloader::tinyobjloader)
+endif()
+
+option(MUJOCO_USE_SYSTEM_sdflib "Use installed sdflib version." OFF)
+mark_as_advanced(MUJOCO_USE_SYSTEM_sdflib)
+
+findorfetch(
+  USE_SYSTEM_PACKAGE
+  ${MUJOCO_USE_SYSTEM_sdflib}
+  PACKAGE_NAME
+  SdfLib
+  LIBRARY_NAME
+  sdflib
+  GIT_REPO
+  https://github.com/UPC-ViRVIG/SdfLib.git
+  GIT_TAG
+  ${MUJOCO_DEP_VERSION_sdflib}
+  PATCH_COMMAND
+  git apply --reject --whitespace=fix ${mujoco_SOURCE_DIR}/cmake/sdflib-optional-dependencies.patch
+  TARGETS
+  SdfLib::SdfLib
+  EXCLUDE_FROM_ALL
+)
+
+if(NOT MUJOCO_USE_SYSTEM_sdflib)
+  target_compile_options(SdfLib PRIVATE ${MUJOCO_MACOS_COMPILE_OPTIONS})
+  target_link_options(SdfLib PRIVATE ${MUJOCO_MACOS_LINK_OPTIONS})
 endif()
 
 option(MUJOCO_USE_SYSTEM_ccd "Use installed ccd version." OFF)
