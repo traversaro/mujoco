@@ -92,7 +92,7 @@ add_subdirectory(src/render)
 add_subdirectory(src/thread)
 add_subdirectory(src/ui)
 
-target_compile_definitions(mujoco PRIVATE _GNU_SOURCE CCD_STATIC_DEFINE MUJOCO_DLL_EXPORTS -DMC_IMPLEM_ENABLE)
+target_compile_definitions(mujoco PRIVATE _GNU_SOURCE MUJOCO_DLL_EXPORTS -DMC_IMPLEM_ENABLE)
 if(MUJOCO_ENABLE_AVX_INTRINSICS)
   target_compile_definitions(mujoco PUBLIC mjUSEPLATFORMSIMD)
 endif()
