@@ -570,9 +570,17 @@ mjmGeom* mjXURDF::Geom(XMLElement* geom_elem, mjmBody* pbody, bool collision) {
       meshfile = mjuu_strippath(meshfile);
     }
 
-    // construct mesh name: always stripped
-    std::string meshname = mjuu_strippath(meshfile);
-    meshname = mjuu_stripext(meshname);
+    // construct mesh name: always stripped and remove the extension
+    // if the meshfile does not start with package:
+    auto startsWith = [](const std::string& fullString, const std::string& prefix) {
+      return fullString.compare(0, prefix.length(), prefix) == 0;
+    };
+
+    std::string meshname = meshfile;
+    if (!startsWith(meshfile, "package:")) {
+      std::string meshname = mjuu_strippath(meshfile);
+      meshname = mjuu_stripext(meshname);
+    }
 
     // look for existing mesh
     mjmMesh* mesh = mjm_findMesh(&model->spec, meshname.c_str());

@@ -376,7 +376,10 @@ mjCModel* mjParseXML(const char* filename, const mjVFS* vfs,
 
       // set reasonable default for parsing a URDF
       // this is separate from the Parser to allow multiple URDFs to be loaded.
-      model->spec.strippath = true;
+      // Edited by traversaro while working on https://github.com/google-deepmind/mujoco/issues/1432
+      // We can't strippath by default, otherwise we never will see the package:// URI and invoke the
+      // resource provider registed for package: uris
+      model->spec.strippath = false;
       model->spec.fusestatic = true;
       model->spec.discardvisual = true;
 
