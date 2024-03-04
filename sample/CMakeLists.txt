@@ -56,6 +56,13 @@ include(SampleDependencies)
 
 set(MUJOCO_SAMPLE_COMPILE_OPTIONS "${AVX_COMPILE_OPTIONS}" "${EXTRA_COMPILE_OPTIONS}")
 set(MUJOCO_SAMPLE_LINK_OPTIONS "${EXTRA_LINK_OPTIONS}")
+set(MUJOCO_SAMPLE_COMMAND_PREFIX "" CACHE STRING "Prefix to prepend to output names.")
+function(mujoco_sample_set_command_prefix target)
+  if(NOT MUJOCO_SAMPLE_COMMAND_PREFIX STREQUAL "")
+    set_target_properties(target PROPERTIES
+      OUTPUT_NAME ${MUJOCO_SAMPLE_COMMAND_PREFIX}target
+  endif()
+endfunction()
 
 if(MUJOCO_HARDEN)
   if(WIN32)
@@ -75,11 +82,13 @@ add_executable(compile compile.cc)
 target_compile_options(compile PUBLIC ${MUJOCO_SAMPLE_COMPILE_OPTIONS})
 target_link_libraries(compile Threads::Threads)
 target_link_options(compile PRIVATE ${MUJOCO_SAMPLE_LINK_OPTIONS})
+mujoco_sample_set_command_prefix(compile)
 
 add_executable(testspeed testspeed.cc)
 target_compile_options(testspeed PUBLIC ${MUJOCO_SAMPLE_COMPILE_OPTIONS})
 target_link_libraries(testspeed Threads::Threads)
 target_link_options(testspeed PRIVATE ${MUJOCO_SAMPLE_LINK_OPTIONS})
+mujoco_sample_set_command_prefix(testspeed)
 
 target_link_libraries(compile mujoco::mujoco)
 target_link_libraries(testspeed mujoco::mujoco)
@@ -95,6 +104,7 @@ target_link_libraries(
   Threads::Threads
 )
 target_link_options(basic PRIVATE ${MUJOCO_SAMPLE_LINK_OPTIONS})
+mujoco_sample_set_command_prefix(basic)
 
 add_executable(record record.cc array_safety.h)
 target_compile_options(record PUBLIC ${MUJOCO_SAMPLE_COMPILE_OPTIONS})
@@ -105,6 +115,7 @@ target_link_libraries(
   Threads::Threads
 )
 target_link_options(record PRIVATE ${MUJOCO_SAMPLE_LINK_OPTIONS})
+mujoco_sample_set_command_prefix(record)
 
 if(APPLE AND MUJOCO_BUILD_MACOS_FRAMEWORKS)
   embed_in_bundle(basic simulate)
