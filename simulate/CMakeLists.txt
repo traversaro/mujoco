@@ -43,6 +43,7 @@ endif()
 
 option(SIMULATE_BUILD_EXECUTABLE "Build the simulate executable binary." ON)
 option(SIMULATE_GLFW_DYNAMIC_SYMBOLS "Whether to resolve GLFW symbols dynamically." OFF)
+set(SIMULATE_COMMAND_PREFIX "" CACHE STRING "Prefix to prepend to the name of the simulate command.")
 
 # Check if we are building as standalone project.
 set(SIMULATE_STANDALONE OFF)
@@ -162,6 +163,10 @@ if(SIMULATE_BUILD_EXECUTABLE)
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/mujoco.ico
     )
+  endif()
+  if(NOT SIMULATE_COMMAND_PREFIX STREQUAL "")
+    set_target_properties(target PROPERTIES
+      OUTPUT_NAME ${SIMULATE_COMMAND_PREFIX}target)
   endif()
 
   target_link_libraries(
