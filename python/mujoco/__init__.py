@@ -47,7 +47,6 @@ from mujoco._structs import *
 from mujoco.gl_context import *
 from mujoco.renderer import Renderer
 
-HEADERS_DIR = os.path.join(os.path.dirname(__file__), 'include/mujoco')
 PLUGINS_DIR = os.path.join(os.path.dirname(__file__), 'plugin')
 
 PLUGIN_HANDLES = []
