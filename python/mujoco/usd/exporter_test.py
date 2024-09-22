@@ -20,12 +20,20 @@ import tempfile
 from absl.testing import absltest
 from etils import epath
 import mujoco
-from mujoco.usd import exporter as exporter_module  # pylint: disable=g-import-not-at-top
 
+# USD is not fully supported on all MuJoCo architectures.
+execute_test = True
+try:
+  from mujoco.usd import exporter as exporter_module  # pylint: disable=g-import-not-at-top
+except ImportError:
+  logging.warning("Skipping test due to missing import")
+  execute_test = False
 
 class ExporterTest(absltest.TestCase):
 
   def test_usd_export(self):
+    if not execute_test:
+      self.fail("Test test_usd_export failed to execute.")
 
     output_dir_root = os.getenv(
         "TEST_UNDECLARED_OUTPUTS_DIR", tempfile.gettempdir()
