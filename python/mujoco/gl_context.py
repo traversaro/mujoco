@@ -23,9 +23,9 @@ import platform
 _SYSTEM = platform.system()
 _MUJOCO_GL = os.environ.get('MUJOCO_GL', '').lower().strip()
 if _MUJOCO_GL not in ('disable', 'disabled', 'off', 'false', '0'):
-  _VALID_MUJOCO_GL = ('enable', 'enabled', 'on', 'true', '1' , 'glfw', '')
+  _VALID_MUJOCO_GL = ('enable', 'enabled', 'on', 'true', '1' , 'glfw', '', 'osmesa')
   if _SYSTEM == 'Linux':
-    _VALID_MUJOCO_GL += ('glx', 'egl', 'osmesa')
+    _VALID_MUJOCO_GL += ('glx', 'egl')
   elif _SYSTEM == 'Windows':
     _VALID_MUJOCO_GL += ('wgl',)
   elif _SYSTEM == 'Darwin':
@@ -34,7 +34,7 @@ if _MUJOCO_GL not in ('disable', 'disabled', 'off', 'false', '0'):
     raise RuntimeError(
         f'invalid value for environment variable MUJOCO_GL: {_MUJOCO_GL}')
 
-  if _SYSTEM == 'Linux' and _MUJOCO_GL == 'osmesa':
+  if _MUJOCO_GL == 'osmesa':
     from mujoco.osmesa import GLContext as _GLContext
     GLContext = _GLContext
   elif _SYSTEM == 'Linux' and _MUJOCO_GL == 'egl':
