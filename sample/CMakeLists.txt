@@ -128,6 +128,7 @@ endif()
 
 if(_INSTALL_SAMPLES)
 
+  if(FALSE)
   include(TargetAddRpath)
 
   # Add support to RPATH for the samples.
@@ -145,6 +146,7 @@ if(_INSTALL_SAMPLES)
     DEPENDS
     MUJOCO_ENABLE_RPATH
   )
+  endif()
 
   install(
     TARGETS basic

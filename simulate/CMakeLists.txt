@@ -251,6 +251,7 @@ if(SIMULATE_BUILD_EXECUTABLE)
 
   if(_INSTALL_SIMULATE)
 
+    if(FALSE)
     include(TargetAddRpath)
 
     # Add support to RPATH for the samples.
@@ -264,6 +265,7 @@ if(SIMULATE_BUILD_EXECUTABLE)
       DEPENDS
       MUJOCO_ENABLE_RPATH
     )
+    endif()
 
     if (MUJOCO_WITH_USD)
       target_compile_definitions(simulate PUBLIC mjUSEUSD)
