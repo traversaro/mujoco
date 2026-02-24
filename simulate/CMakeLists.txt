@@ -81,6 +81,7 @@ if(MUJOCO_HARDEN)
 endif()
 
 # Fetch lodepng dependency.
+find_package(lodepng REQUIRED)
 if(NOT TARGET lodepng)
   FetchContent_Declare(
     lodepng
@@ -102,30 +103,34 @@ if(NOT TARGET lodepng)
 endif()
 
 # Simulate library
-add_library(platform_ui_adapter OBJECT)
+add_library(libmujoco_simulate)
 target_sources(
-  platform_ui_adapter
-  PUBLIC glfw_adapter.h glfw_dispatch.h platform_ui_adapter.h
+  libmujoco_simulate
+  PRIVATE glfw_adapter.h glfw_dispatch.h platform_ui_adapter.h
   PRIVATE glfw_adapter.cc glfw_dispatch.cc platform_ui_adapter.cc
 )
-target_compile_options(platform_ui_adapter PRIVATE ${MUJOCO_SIMULATE_COMPILE_OPTIONS})
+target_compile_options(libmujoco_simulate PRIVATE ${MUJOCO_SIMULATE_COMPILE_OPTIONS})
 if(APPLE)
-  target_sources(platform_ui_adapter PUBLIC glfw_corevideo.h PRIVATE glfw_corevideo.mm)
+  target_sources(libmujoco_simulate PUBLIC glfw_corevideo.h PRIVATE glfw_corevideo.mm)
   set_source_files_properties(glfw_corevideo.mm PROPERTIES COMPILE_FLAGS -Wno-deprecated-declarations)
-  target_link_libraries(platform_ui_adapter PUBLIC "-framework CoreVideo")
+  target_link_libraries(libmujoco_simulate PUBLIC "-framework CoreVideo")
 endif()
 target_include_directories(
-  platform_ui_adapter PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-                             $<TARGET_PROPERTY:glfw,INTERFACE_INCLUDE_DIRECTORIES>
+  libmujoco_simulate PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
-target_link_libraries(platform_ui_adapter PUBLIC mujoco::mujoco)
+target_link_libraries(libmujoco_simulate PUBLIC mujoco::mujoco)
 if(SIMULATE_GLFW_DYNAMIC_SYMBOLS)
-  target_compile_definitions(platform_ui_adapter PUBLIC mjGLFW_DYNAMIC_SYMBOLS)
+  target_compile_definitions(libmujoco_simulate PUBLIC mjGLFW_DYNAMIC_SYMBOLS)
 endif()
-add_library(mujoco::platform_ui_adapter ALIAS platform_ui_adapter)
 
-add_library(libmujoco_simulate STATIC $<TARGET_OBJECTS:platform_ui_adapter> $<TARGET_OBJECTS:lodepng>)
 set_target_properties(libmujoco_simulate PROPERTIES OUTPUT_NAME simulate)
+target_link_libraries(libmujoco_simulate PRIVATE lodepng)
+# Upstream MuJoCo is carefully not linking glfw here, and so it is just include its directories
+# to avoid dealing with two copies of glfw. In conda-forge (or in any C++/Python distribution)
+# pyglfw will depend on the same glfw copy linked here, so we can just link glfw normally
+# This avoids the tricky cmake bug https://gitlab.kitware.com/cmake/cmake/-/issues/19072
++target_link_libraries(libmujoco_simulate PUBLIC glfw)
+set_target_properties(libmujoco_simulate PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 add_library(mujoco::libmujoco_simulate ALIAS libmujoco_simulate)
 set_target_properties(libmujoco_simulate PROPERTIES PUBLIC_HEADER "simulate.h;platform_ui_adapter.h;glfw_adapter.h;glfw_dispatch.h;glfw_corevideo.h;array_safety.h")
 
