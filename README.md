@@ -84,7 +84,7 @@ Users who wish to build MuJoCo from source should consult the [build from
 source] section of the documentation. However, note that the commit at
 the tip of the `main` branch may be unstable.
 
-### Python (>= 3.9)
+### Python (>= 3.10)
 
 The native Python bindings, which come pre-packaged with a copy of MuJoCo, can
 be installed from [PyPI] via:
@@ -97,6 +97,12 @@ Note that Pre-built Linux wheels target `manylinux2014`, see
 [here](https://github.com/pypa/manylinux) for compatible distributions. For more
 information such as building the bindings from source, see the [Python bindings]
 section of the documentation.
+
+## Versioning
+
+We aim to release MuJoCo in the first week of each month. Our versioning
+standards changed to modified Semantic Versioning in 3.5.0,
+see [versioning](VERSIONING.md) for details.
 
 ## Contributing
 
@@ -141,6 +147,7 @@ These packages give users of various languages access to MuJoCo functionality:
 - **Swift**: [swift-mujoco](https://github.com/liuliu/swift-mujoco)
 - **Java**: [mujoco-java](https://github.com/CommonWealthRobotics/mujoco-java)
 - **Julia**: [MuJoCo.jl](https://github.com/JamieMair/MuJoCo.jl)
+- **Rust**: [MuJoCo-rs](https://github.com/davidhozic/mujoco-rs)
 
 ### Converters
 

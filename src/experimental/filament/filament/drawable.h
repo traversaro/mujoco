@@ -53,6 +53,7 @@ class Drawable {
   // beginFrame/endFrame.
   void SetDrawMode(Material::DrawMode mode);
 
+
  private:
   void AddMesh(int data_id);
   void AddHeightField(int hfield_id);
@@ -62,7 +63,7 @@ class Drawable {
   void SetTransform(const mjvGeom& geom);
 
   // Updates the material parameters of the drawable for rendering.
-  void UpdateMaterial(const mjvGeom& geom);
+  void UpdateMaterial(const mjvGeom& geom, bool use_segid_color);
 
   Material material_;
   Renderables renderables_;

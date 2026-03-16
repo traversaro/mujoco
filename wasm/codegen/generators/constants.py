@@ -14,7 +14,7 @@
 
 """Constants used in the code generation process."""
 
-from typing import Dict, List, Set
+from typing import Dict, Set
 from introspect import structs as introspect_structs
 
 PRIMITIVE_TYPES: Set[str] = {
@@ -37,7 +37,7 @@ PRIMITIVE_TYPES: Set[str] = {
     # go/keep-sorted end
 }
 
-_SKIPPED_PLUGIN_FUNCTIONS: List[str] = [
+_SKIPPED_PLUGIN_FUNCTIONS: tuple[str, ...] = (
     # go/keep-sorted start
     "mj_getPluginConfig",
     "mj_loadAllPluginLibraries",
@@ -59,18 +59,22 @@ _SKIPPED_PLUGIN_FUNCTIONS: List[str] = [
     "mjp_registerResourceProvider",
     "mjp_resourceProviderCount",
     # go/keep-sorted end
-]
+)
 
 # Functions that are bound as class methods
-_SKIPPED_CLASS_METHODS: List[str] = [
+_SKIPPED_CLASS_METHODS: tuple[str, ...] = (
     # go/keep-sorted start
-    "mj_compile",
+    "mj_addBufferVFS",
     "mj_copyData",
     "mj_copyModel",
     "mj_copySpec",
+    "mj_defaultVFS",
     "mj_deleteData",
+    "mj_deleteFileVFS",
     "mj_deleteModel",
     "mj_deleteSpec",
+    "mj_deleteVFS",
+    "mj_loadModel",
     "mj_loadXML",
     "mj_makeData",
     "mj_makeSpec",
@@ -81,15 +85,15 @@ _SKIPPED_CLASS_METHODS: List[str] = [
     "mj_saveXML",  # TODO(manevi): Bind this function.
     "mj_saveXMLString",  # TODO(manevi): Bind this function.
     # go/keep-sorted end
-]
+)
 
 # Omitted because not very useful
-_SKIPPED_WRITABLE_ERROR: List[str] = [
+_SKIPPED_WRITABLE_ERROR: tuple[str, ...] = (
     "mj_printSchema",
-]
+)
 
 # Omitted thread management functions
-_SKIPPED_THREAD_FUNCTIONS: List[str] = [
+_SKIPPED_THREAD_FUNCTIONS: tuple[str, ...] = (
     # go/keep-sorted start
     "mju_bindThreadPool",
     "mju_defaultTask",
@@ -98,10 +102,10 @@ _SKIPPED_THREAD_FUNCTIONS: List[str] = [
     "mju_threadPoolDestroy",
     "mju_threadPoolEnqueue",
     # go/keep-sorted end
-]
+)
 
 # Omitted asset cache functions
-_SKIPPED_ASSET_CACHE_FUNCTIONS: List[str] = [
+_SKIPPED_ASSET_CACHE_FUNCTIONS: tuple[str, ...] = (
     # go/keep-sorted start
     "mj_clearCache",
     "mj_getCache",
@@ -109,21 +113,19 @@ _SKIPPED_ASSET_CACHE_FUNCTIONS: List[str] = [
     "mj_getCacheSize",
     "mj_setCacheCapacity",
     # go/keep-sorted end
-]
+)
 
 # Omitted Virtual Filesystem (VFS) functions
-_SKIPPED_VFS_FUNCTIONS: List[str] = [
+_SKIPPED_VFS_FUNCTIONS: tuple[str, ...] = (
     # go/keep-sorted start
-    "mj_addBufferVFS",
     "mj_addFileVFS",
-    "mj_defaultVFS",
-    "mj_deleteFileVFS",
-    "mj_deleteVFS",
+    "mj_mountVFS",
+    "mj_unmountVFS",
     # go/keep-sorted end
-]
+)
 
 # Omitted irrelevant visual functions
-_SKIPPED_VISUAL_FUNCTIONS: List[str] = [
+_SKIPPED_VISUAL_FUNCTIONS: tuple[str, ...] = (
     # go/keep-sorted start
     "mjv_averageCamera",
     "mjv_copyData",
@@ -132,15 +134,14 @@ _SKIPPED_VISUAL_FUNCTIONS: List[str] = [
     "mjv_freeScene",
     "mjv_makeScene",
     # go/keep-sorted end
-]
+)
 
-_SKIPPED_MEMORY_FUNCTIONS: List[str] = [
+_SKIPPED_MEMORY_FUNCTIONS: tuple[str, ...] = (
     # go/keep-sorted start
     "mj_freeLastXML",
     "mj_freeStack",
-    "mj_loadModel",
+    "mj_loadModelBuffer",
     "mj_markStack",
-    "mj_saveModel",
     "mj_stackAllocByte",
     "mj_stackAllocInt",
     "mj_stackAllocNum",
@@ -158,9 +159,9 @@ _SKIPPED_MEMORY_FUNCTIONS: List[str] = [
     "mju_warning_i",
     "mju_warning_s",
     # go/keep-sorted end
-]
+)
 
-_SKIPPED_GETTERS_AND_SETTERS: List[str] = [
+_SKIPPED_GETTERS_AND_SETTERS: tuple[str, ...] = (
     # go/keep-sorted start
     "mjs_appendFloatVec",
     "mjs_appendIntVec",
@@ -179,26 +180,23 @@ _SKIPPED_GETTERS_AND_SETTERS: List[str] = [
     "mjs_setStringVec",
     "mjs_setUserValue",
     # go/keep-sorted end
-]
+)
 
-_SKIPPED_UTILITY_FUNCTIONS: List[str] = [
+_SKIPPED_UTILITY_FUNCTIONS: tuple[str, ...] = (
     # go/keep-sorted start
+    "mj_readSensor",
+    "mju_closeResource",
+    "mju_decodeResource",
+    "mju_getResourceDir",
     "mju_getXMLDependencies",
+    "mju_isModifiedResource",
+    "mju_openResource",
+    "mju_readResource",
     # go/keep-sorted end
-]
-
-# Functions that require special wrappers.
-# These functions are not bound automatically but are written by hand instead.
-MANUAL_WRAPPER_FUNCTIONS: List[str] = [
-    # go/keep-sorted start
-    "mj_saveLastXML",
-    "mj_setLengthRange",
-    "mju_error",
-    # go/keep-sorted end
-]
+)
 
 # List of functions that should be skipped during the code generation process.
-SKIPPED_FUNCTIONS: List[str] = (
+SKIPPED_FUNCTIONS: tuple[str, ...] = (
     _SKIPPED_CLASS_METHODS
     + _SKIPPED_THREAD_FUNCTIONS
     + _SKIPPED_MEMORY_FUNCTIONS
@@ -212,7 +210,7 @@ SKIPPED_FUNCTIONS: List[str] = (
 )
 
 # List of structs that should be skipped during the code generation process.
-SKIPPED_STRUCTS: List[str] = [
+SKIPPED_STRUCTS: tuple[str, ...] = (
     # go/keep-sorted start
     "mjCache",
     "mjSDF",
@@ -229,14 +227,35 @@ SKIPPED_STRUCTS: List[str] = [
     "mjuiThemeColor",
     "mjuiThemeSpacing"
     # go/keep-sorted end
-]
+)
 
-# These structs require specific function calls for creation and/or deletion,
-# or some of their fields need to be handled manually for now;
-# making their wrapper constructors/destructors non-trivial.
-MANUAL_STRUCTS: List[str] = [
-    "MjvScene",
-]
+# Functions that require special wrappers.
+# These functions are not bound automatically but are written by hand instead.
+MANUAL_WRAPPER_FUNCTIONS: tuple[str, ...] = (
+    # go/keep-sorted start
+    "mj_compile",
+    "mj_saveLastXML",
+    "mj_saveModel",
+    "mj_setLengthRange",
+    "mju_error",
+    # go/keep-sorted end
+)
+
+# Structs for which header generation is done manually.
+# mjvScene is included here because buffer sizes need to be calculated based on
+# introspect doc strings, which was considered a brittle unreliable solution in
+# the past.
+MANUAL_STRUCTS_HEADERS: tuple[str, ...] = (
+    "mjvScene",
+    "mjVFS",
+)
+# Structs for which source code generation is done manually.
+MANUAL_STRUCTS_SOURCES: tuple[str, ...] = (
+    "mjData",
+    "mjModel",
+    "mjvScene",
+    "mjSpec",
+)
 
 # Dictionary that maps anonymous structs to their parent struct and field name.
 # Anonymous structs are not defined as independent structs in the MuJoCo
@@ -255,14 +274,14 @@ ANONYMOUS_STRUCTS: Dict[str, Dict[str, str]] = {
 
 # This list is created by subtracting the skipped structs from the list of all
 # structs and adding the anonymous structs.
-STRUCTS_TO_BIND: List[str] = list(
+STRUCTS_TO_BIND: list[str] = list(
     set(introspect_structs.STRUCTS.keys())
     .union(ANONYMOUS_STRUCTS.keys())
     .difference(set(SKIPPED_STRUCTS))
 )
 
 # List of structs that do not have a default constructor.
-NO_DEFAULT_CONSTRUCTORS: List[str] = [
+NO_DEFAULT_CONSTRUCTORS: tuple[str, ...] = (
     # go/keep-sorted start
     "mjContact",
     "mjSolverStat",
@@ -277,12 +296,12 @@ NO_DEFAULT_CONSTRUCTORS: List[str] = [
     "mjvGLCamera",
     "mjvLight",
     # go/keep-sorted end
-]
+)
 
 # List of `mjData` fields where the array size should be obtained from other
 # `mjData` members, instead of from `mjModel` members. This is typically the
 # case for fields that are dynamically allocated during the simulation.
-MJDATA_SIZES: List[str] = [
+MJDATA_SIZES: tuple[str, ...] = (
     # go/keep-sorted start
     "contact",
     "efc_AR",
@@ -352,13 +371,13 @@ MJDATA_SIZES: List[str] = [
     "map_efc2iefc",
     "map_iefc2efc",
     # go/keep-sorted end
-]
+)
 
 # Fields that should be entirely omitted from the bindings.
-SKIPPED_FIELDS: Dict[str, List[str]] = {}
+SKIPPED_FIELDS: Dict[str, list[str]] = {}
 
 # Fields handled manually in template file struct declaration.
-MANUAL_FIELDS: Dict[str, List[str]] = {
+MANUAL_FIELDS: Dict[str, list[str]] = {
     # go/keep-sorted start
     "MjData": ["contact"],
     "MjvScene": [

@@ -18,7 +18,7 @@ MuJoCo defines a large number of types:
   Note that the API does not use these enum types directly. Instead it uses ints, and the documentation/comments state
   that certain ints correspond to certain enum types. This is because we want the API to be compiler-independent, and
   the C standard does not dictate how many bytes must be used to represent an enum type. Nevertheless, for improved
-  readiblity, we recommend using these types when calling API functions which take them as arguments.
+  readability, we recommend using these types when calling API functions which take them as arguments.
 
 - :ref:`C struct types<tyStructure>`. These can be classified as:
 
@@ -164,6 +164,16 @@ second group are geom types that cannot be used in the model but are used by the
 elements. These values are used in ``m->geom_type`` and ``m->site_type``.
 
 .. mujoco-include:: mjtGeom
+
+
+.. _mjtProjection:
+
+mjtProjection
+~~~~~~~~~~~~~
+
+Type of camera projection. Used in ``m->cam_projection``.
+
+.. mujoco-include:: mjtProjection
 
 
 .. _mjtCamLight:
@@ -796,7 +806,7 @@ Struct types
 ------------
 
 The three central struct types for physics simulation are :ref:`mjModel`, :ref:`mjOption` (embedded in :ref:`mjModel`)
-and :ref:`mjData`. An introductory discussion of these strucures can be found in the :ref:`Overview<ModelAndData>`.
+and :ref:`mjData`. An introductory discussion of these structures can be found in the :ref:`Overview<ModelAndData>`.
 
 
 .. _mjModel:
@@ -1698,7 +1708,7 @@ mjfOpenResource
 
    typedef int (*mjfOpenResource)(mjResource* resource);
 
-This callback is for opeing a resource; returns zero on failure.
+This callback is for opening a resource; returns zero on failure.
 
 .. _mjfReadResource:
 

@@ -16,7 +16,6 @@
 
 #include <array>
 #include <cstdint>
-#include <cstdlib>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -35,32 +34,32 @@
 #include "experimental/filament/filament/model_util.h"
 #include "experimental/filament/filament/texture_util.h"
 #include "experimental/filament/render_context_filament.h"
+#include "user/user_resource.h"
 
 namespace mujoco {
 namespace {
 
 // Loads binary data from a file using mjrFilamentConfig callbacks.
 struct Asset {
-  Asset(const char* filename, const mjrFilamentConfig* config) {
-    const int error = config->load_asset(filename, config->load_asset_user_data,
-                                         &payload, &size);
-    if (error) {
-      mju_error("Failed to load file: %s (error: %d)", filename, error);
-    }
+  explicit Asset(std::string_view filename) {
+    std::string path = "filament:" + std::string(filename);
+
+    resource = mju_openResource("", path.c_str(), nullptr, nullptr, 0);
+    size = mju_readResource(resource, const_cast<const void**>(&payload));
   }
 
   ~Asset() {
-    if (payload) {
-      free(payload);
-      payload = nullptr;
+    if (resource) {
+      mju_closeResource(resource);
     }
   }
 
-  uint64_t size = 0;
-  unsigned char* payload = nullptr;
-
   Asset(const Asset&) = delete;
   Asset& operator=(const Asset&) = delete;
+
+  int size = 0;
+  void* payload = nullptr;
+  mjResource* resource = nullptr;
 };
 
 }  // namespace
@@ -77,9 +76,10 @@ ObjectManager::ObjectManager(const mjModel* model, filament::Engine* engine,
   shapes_[kTube] = CreateTube(engine_, model_);
   shapes_[kPlane] = CreatePlane(engine_, model_);
   shapes_[kSphere] = CreateSphere(engine_, model_);
+  shapes_[kTriangle] = CreateTriangle(engine_, model_);
 
-  auto LoadMaterial = [this](const char* filename) {
-    Asset asset(filename, config_);
+  auto LoadMaterial = [this](std::string_view filename) {
+    Asset asset(filename);
     filament::Material::Builder material_builder;
     material_builder.package(asset.payload, asset.size);
     return material_builder.build(*this->engine_);
@@ -120,8 +120,8 @@ ObjectManager::ObjectManager(const mjModel* model, filament::Engine* engine,
   fallback_orm_ = Create2dTexture(engine_, 1, 1, 3, orm_data, false);
 
   fallback_textures_[mjTEXROLE_USER] = fallback_black_;
-  fallback_textures_[mjTEXROLE_RGB] = fallback_black_;
-  fallback_textures_[mjTEXROLE_OCCLUSION] = fallback_black_;
+  fallback_textures_[mjTEXROLE_RGB] = fallback_white_;
+  fallback_textures_[mjTEXROLE_OCCLUSION] = fallback_white_;
   fallback_textures_[mjTEXROLE_ROUGHNESS] = fallback_white_;
   fallback_textures_[mjTEXROLE_METALLIC] = fallback_black_;
   fallback_textures_[mjTEXROLE_NORMAL] = fallback_normal_;
@@ -129,6 +129,13 @@ ObjectManager::ObjectManager(const mjModel* model, filament::Engine* engine,
   fallback_textures_[mjTEXROLE_ORM] = fallback_orm_;
 
   fallback_indirect_light_ = LoadFallbackIndirectLight("ibl.ktx", 1.0f);
+
+  specular_multiplier_ = ReadElement(
+      model_, "filament.phong.specular_multiplier", specular_multiplier_);
+  shininess_multiplier_ = ReadElement(
+      model_, "filament.phong.shininess_multiplier", shininess_multiplier_);
+  emissive_multiplier_ = ReadElement(
+      model_, "filament.phong.emissive_multiplier", emissive_multiplier_);
 }
 
 ObjectManager::~ObjectManager() {
@@ -157,9 +164,6 @@ ObjectManager::~ObjectManager() {
   engine_->destroy(fallback_black_);
   engine_->destroy(fallback_normal_);
   engine_->destroy(fallback_orm_);
-  for (auto& iter : fonts_) {
-    engine_->destroy(iter.second);
-  }
 }
 
 void ObjectManager::UploadMesh(const mjModel* model, int id) {
@@ -243,14 +247,6 @@ void ObjectManager::UploadHeightField(const mjModel* model, int id) {
       CreateIndexBuffer(engine_, model, id, MeshType::kHeightField);
 }
 
-void ObjectManager::UploadFont(const uint8_t* pixels, int width, int height,
-                               int id) {
-  if (auto iter = fonts_.find(id); iter != fonts_.end()) {
-    engine_->destroy(iter->second);
-  }
-  fonts_[id] = Create2dTexture(engine_, width, height, 4, pixels, false);
-}
-
 filament::Material* ObjectManager::GetMaterial(MaterialType type) const {
   if (type < 0 || type >= kNumMaterials) {
     mju_error("Invalid material type: %d", type);
@@ -283,11 +279,6 @@ const FilamentBuffers* ObjectManager::GetShapeBuffer(ShapeType shape) const {
     mju_error("Invalid shape type: %d", shape);
   }
   return &shapes_[shape];
-}
-
-const filament::Texture* ObjectManager::GetFont(int font_id) const {
-  auto it = fonts_.find(font_id);
-  return it != fonts_.end() ? it->second : nullptr;
 }
 
 const filament::Texture* ObjectManager::GetTexture(int tex_id) const {
@@ -346,14 +337,15 @@ filament::IndirectLight* ObjectManager::CreateIndirectLight(int tex_id,
 
 filament::IndirectLight* ObjectManager::LoadFallbackIndirectLight(
     std::string_view filename, float intensity) {
-  Asset asset(std::string(filename).c_str(), config_);
+  Asset asset(filename);
   if (asset.size == 0) {
     return nullptr;
   }
 
   filament::math::float3 spherical_harmonics[9];
   filament::Texture* tex =
-      CreateKtxTexture(engine_, asset.payload, asset.size, spherical_harmonics);
+      CreateKtxTexture(engine_, reinterpret_cast<const uint8_t*>(asset.payload),
+                       asset.size, spherical_harmonics);
   return CreateIndirectLight(tex, &spherical_harmonics, intensity);
 }
 

@@ -180,21 +180,26 @@ static void gjk(mjCCDStatus* status, mjCCDObj* obj1, mjCCDObj* obj2) {
   mjtNum x_k[3];                           // the kth approximation point in Minkowski difference
   mjtNum lambda[4] = {1, 0, 0, 0};         // barycentric coordinates for x_k
   mjtNum cutoff2 = status->dist_cutoff * status->dist_cutoff;
+  mjtNum tol2 = status->tolerance * status->tolerance;
 
   // if both geoms are discrete, finite convergence is guaranteed; set tolerance to 0
-  mjtNum epsilon = discreteGeoms(obj1, obj2) ? 0 : 0.5 * status->tolerance * status->tolerance;
+  mjtNum epsilon = discreteGeoms(obj1, obj2) ? 0 : 0.5 * tol2;
+
+  // tolerance on squared norm of x_k
+  mjtNum min_norm2 = discreteGeoms(obj1, obj2) ? mjMINVAL2 : tol2;
   mjtNum x_norm;
 
   // set initial guess
   sub3(x_k, x1_k, x2_k);
 
   for (; k < kmax; k++) {
-    // compute the kth support point
-    x_norm = dot3(x_k, x_k);
-    if (x_norm < mjMINVAL2) {
+    // in tolerance for geoms to be in contact
+    if ((x_norm = dot3(x_k, x_k)) < min_norm2) {
       break;
     }
     x_norm = mju_sqrt(x_norm);
+
+    // compute the kth support point
     gjkSupport(simplex + n, obj1, obj2, x_k, x_norm);
     mjtNum *s_k = simplex[n].vert;
 
@@ -1269,30 +1274,22 @@ static void horizon(Polytope* pt, Face* face) {
 }
 
 
-// recover witness points from EPA polytope
-static void epaWitness(const Polytope* pt, const Face* face, mjtNum x1[3], mjtNum x2[3]) {
+// recover witness points from EPA polytope, return signed distance between witness points
+static mjtNum epaWitness(const Polytope* pt, const Face* face, mjtNum x1[3], mjtNum x2[3]) {
   // compute affine coordinates for witness points on plane defined by face
   mjtNum lambda[3];
-  mjtNum* v1 = pt->verts[face->verts[0]].vert;
-  mjtNum* v2 = pt->verts[face->verts[1]].vert;
-  mjtNum* v3 = pt->verts[face->verts[2]].vert;
-  triAffineCoord(lambda, v1, v2, v3, face->v);
+  Vertex* v1 = pt->verts + face->verts[0];
+  Vertex* v2 = pt->verts + face->verts[1];
+  Vertex* v3 = pt->verts + face->verts[2];
+  triAffineCoord(lambda, v1->vert, v2->vert, v3->vert, face->v);
 
-  // face on geom 1
-  v1 = pt->verts[face->verts[0]].vert1;
-  v2 = pt->verts[face->verts[1]].vert1;
-  v3 = pt->verts[face->verts[2]].vert1;
-  x1[0] = v1[0]*lambda[0] + v2[0]*lambda[1] + v3[0]*lambda[2];
-  x1[1] = v1[1]*lambda[0] + v2[1]*lambda[1] + v3[1]*lambda[2];
-  x1[2] = v1[2]*lambda[0] + v2[2]*lambda[1] + v3[2]*lambda[2];
+  // witness point on geom 1
+  lincomb(x1, lambda, 3, v1->vert1, v2->vert1, v3->vert1, NULL);
 
-  // face on geom 2
-  v1 = pt->verts[face->verts[0]].vert2;
-  v2 = pt->verts[face->verts[1]].vert2;
-  v3 = pt->verts[face->verts[2]].vert2;
-  x2[0] = v1[0]*lambda[0] + v2[0]*lambda[1] + v3[0]*lambda[2];
-  x2[1] = v1[1]*lambda[0] + v2[1]*lambda[1] + v3[1]*lambda[2];
-  x2[2] = v1[2]*lambda[0] + v2[2]*lambda[1] + v3[2]*lambda[2];
+  // witness point on geom 2
+  lincomb(x2, lambda, 3, v1->vert2, v2->vert2, v3->vert2, NULL);
+
+  return -mju_sqrt(face->dist2);
 }
 
 
@@ -1434,9 +1431,8 @@ static Face* epa(mjCCDStatus* status, Polytope* pt, mjCCDObj* obj1, mjCCDObj* ob
 
   status->epa_iterations = k;
   if (face) {
-    epaWitness(pt, face, status->x1, status->x2);
+    status->dist = epaWitness(pt, face, status->x1, status->x2);
     status->nx = 1;
-    status->dist = -mju_sqrt(face->dist2);
   } else {
     status->nx = 0;
     status->dist = 0;
@@ -2071,6 +2067,15 @@ static inline int simplexDim(int* v1i, int* v2i, int* v3i, mjtNum** v1, mjtNum**
 // recover multiple contacts from EPA polytope
 static void multicontact(Polytope* pt, Face* face, mjCCDStatus* status,
                          mjCCDObj* obj1, mjCCDObj* obj2) {
+  const int* polynum = obj1->model->mesh_polynum;
+  const int* geom_dataid = obj1->model->geom_dataid;
+  if (obj1->geom_type == mjGEOM_MESH && !polynum[geom_dataid[obj1->geom]]) {
+    return;
+  }
+  if (obj2->geom_type == mjGEOM_MESH && !polynum[geom_dataid[obj2->geom]]) {
+    return;
+  }
+
   mjtNum face1[mjMAX_POLYVERT * 3], face2[mjMAX_POLYVERT * 3], endverts[mjMAX_POLYVERT * 3];
   // get vertices of faces from EPA
   int v11i = pt->verts[face->verts[0]].index1;

@@ -14,17 +14,6 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-# Determine the render configuration and dependencies based options.
-if(MUJOCO_USE_FILAMENT AND MUJOCO_USE_FILAMENT_VULKAN)
-    set(MUJOCO_STUDIO_RENDER_CONFIG "USE_FILAMENT_VULKAN")
-    set(MUJOCO_STUDIO_RENDER_DEPS "mujoco::filament")
-elseif(MUJOCO_USE_FILAMENT)
-    set(MUJOCO_STUDIO_RENDER_CONFIG "USE_FILAMENT_OPENGL")
-    set(MUJOCO_STUDIO_RENDER_DEPS "mujoco::filament")
-else()
-    set(MUJOCO_STUDIO_RENDER_CONFIG "USE_CLASSIC_OPENGL")
-endif()
-
 set(MUJOCO_STUDIO_TARGET_NAME mujoco_studio)
 
 add_executable(${MUJOCO_STUDIO_TARGET_NAME})
@@ -42,15 +31,14 @@ target_include_directories(${MUJOCO_STUDIO_TARGET_NAME}
         ${PROJECT_SOURCE_DIR}/src
 )
 
-target_compile_definitions(${MUJOCO_STUDIO_TARGET_NAME}
-    PRIVATE
-        -D${MUJOCO_STUDIO_RENDER_CONFIG}
-)
-
 if (WIN32)
     target_compile_definitions(${MUJOCO_STUDIO_TARGET_NAME}
         PRIVATE
         -D_USE_MATH_DEFINES
+    )
+    set_target_properties(${MUJOCO_STUDIO_TARGET_NAME}
+        PROPERTIES
+            VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
     )
 endif()
 
@@ -61,15 +49,21 @@ include(third_party_deps/font_awesome)
 
 target_link_libraries(${MUJOCO_STUDIO_TARGET_NAME}
     PRIVATE
-        ${MUJOCO_STUDIO_RENDER_DEPS}
         absl::flags
+        absl::flags_parse
         dear_imgui
-        dear_imgui_OpenGL3
-        dear_imgui_SDL2
         implot
         mujoco::mujoco
-        mujoco::toolbox
+        mujoco::platform
 )
+
+# TODO: re-enable mjz support on Windows builds once DllMain issue is resolved.
+if (NOT WIN32)
+    target_link_libraries(${MUJOCO_STUDIO_TARGET_NAME}
+        PRIVATE
+            mujoco::mjz
+    )
+endif()
 
 file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets)
 

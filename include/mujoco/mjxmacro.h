@@ -18,55 +18,148 @@
 
 //-------------------------------- mjOption --------------------------------------------------------
 
-// scalar fields of mjOption
-#define MJOPTION_FLOATS             \
-    X( mjtNum,  timestep         )  \
-    X( mjtNum,  impratio         )  \
-    X( mjtNum,  tolerance        )  \
-    X( mjtNum,  ls_tolerance     )  \
-    X( mjtNum,  noslip_tolerance )  \
-    X( mjtNum,  ccd_tolerance    )  \
-    X( mjtNum,  sleep_tolerance  )  \
-    X( mjtNum,  density          )  \
-    X( mjtNum,  viscosity        )  \
-    X( mjtNum,  o_margin         )
+// fields of mjOption
+// XVEC means that a field is a vector (i.e. size > 1)
+#define MJOPTION_FIELDS                        \
+    X   ( mjtNum, timestep,          1      )  \
+    X   ( mjtNum, impratio,          1      )  \
+    X   ( mjtNum, tolerance,         1      )  \
+    X   ( mjtNum, ls_tolerance,      1      )  \
+    X   ( mjtNum, noslip_tolerance,  1      )  \
+    X   ( mjtNum, ccd_tolerance,     1      )  \
+    X   ( mjtNum, sleep_tolerance,   1      )  \
+    XVEC( mjtNum, gravity,           3      )  \
+    XVEC( mjtNum, wind,              3      )  \
+    XVEC( mjtNum, magnetic,          3      )  \
+    X   ( mjtNum, density,           1      )  \
+    X   ( mjtNum, viscosity,         1      )  \
+    X   ( mjtNum, o_margin,          1      )  \
+    XVEC( mjtNum, o_solref,          mjNREF )  \
+    XVEC( mjtNum, o_solimp,          mjNIMP )  \
+    XVEC( mjtNum, o_friction,        5      )  \
+    X   ( int,    integrator,        1      )  \
+    X   ( int,    cone,              1      )  \
+    X   ( int,    jacobian,          1      )  \
+    X   ( int,    solver,            1      )  \
+    X   ( int,    iterations,        1      )  \
+    X   ( int,    ls_iterations,     1      )  \
+    X   ( int,    noslip_iterations, 1      )  \
+    X   ( int,    ccd_iterations,    1      )  \
+    X   ( int,    disableflags,      1      )  \
+    X   ( int,    enableflags,       1      )  \
+    X   ( int,    disableactuator,   1      )  \
+    X   ( int,    sdf_initpoints,    1      )  \
+    X   ( int,    sdf_iterations,    1      )
 
 
-#define MJOPTION_INTS               \
-    X( int,     integrator        ) \
-    X( int,     cone              ) \
-    X( int,     jacobian          ) \
-    X( int,     solver            ) \
-    X( int,     iterations        ) \
-    X( int,     ls_iterations     ) \
-    X( int,     noslip_iterations ) \
-    X( int,     ccd_iterations    ) \
-    X( int,     disableflags      ) \
-    X( int,     enableflags       ) \
-    X( int,     disableactuator   ) \
-    X( int,     sdf_initpoints    ) \
-    X( int,     sdf_iterations    )
+//-------------------------------- mjStatistic -----------------------------------------------------
+
+// fields of mjStatistic
+#define MJSTATISTIC_FIELDS  \
+    X   ( meaninertia, 1 )  \
+    X   ( meanmass,    1 )  \
+    X   ( meansize,    1 )  \
+    X   ( extent,      1 )  \
+    XVEC( center,      3 )
 
 
-#define MJOPTION_SCALARS            \
-    MJOPTION_FLOATS                 \
-    MJOPTION_INTS
+//-------------------------------- mjVisual --------------------------------------------------------
 
+// fields of mjVisual
+#define MJVISUAL_GLOBAL_FIELDS    \
+    X( int,   cameraid         )  \
+    X( int,   orthographic     )  \
+    X( float, fovy             )  \
+    X( float, ipd              )  \
+    X( float, azimuth          )  \
+    X( float, elevation        )  \
+    X( float, linewidth        )  \
+    X( float, glow             )  \
+    X( float, realtime         )  \
+    X( int,   offwidth         )  \
+    X( int,   offheight        )  \
+    X( int,   ellipsoidinertia )  \
+    X( int,   bvactive         )
 
-// vector fields of mjOption
-#define MJOPTION_VECTORS            \
-    X( gravity,         3       )   \
-    X( wind,            3       )   \
-    X( magnetic,        3       )   \
-    X( o_solref,        mjNREF  )   \
-    X( o_solimp,        mjNIMP  )   \
-    X( o_friction,      5       )
+#define MJVISUAL_QUALITY_FIELDS  \
+    X( shadowsize )              \
+    X( offsamples )              \
+    X( numslices  )              \
+    X( numstacks  )              \
+    X( numquads   )
+
+#define MJVISUAL_HEADLIGHT_FIELDS       \
+    XVEC( float, ambient,          3 )  \
+    XVEC( float, diffuse,          3 )  \
+    XVEC( float, specular,         3 )  \
+    X   ( int,   active,           1 )
+
+#define MJVISUAL_MAP_FIELDS  \
+    X( stiffness      )      \
+    X( stiffnessrot   )      \
+    X( force          )      \
+    X( torque         )      \
+    X( alpha          )      \
+    X( fogstart       )      \
+    X( fogend         )      \
+    X( znear          )      \
+    X( zfar           )      \
+    X( haze           )      \
+    X( shadowclip     )      \
+    X( shadowscale    )      \
+    X( actuatortendon )
+
+#define MJVISUAL_SCALE_FIELDS     \
+    X( forcewidth     )           \
+    X( contactwidth   )           \
+    X( contactheight  )           \
+    X( connect        )           \
+    X( com            )           \
+    X( camera         )           \
+    X( light          )           \
+    X( selectpoint    )           \
+    X( jointlength    )           \
+    X( jointwidth     )           \
+    X( actuatorlength )           \
+    X( actuatorwidth  )           \
+    X( framelength    )           \
+    X( framewidth     )           \
+    X( constraint     )           \
+    X( slidercrank    )           \
+    X( frustum        )
+
+#define MJVISUAL_RGBA_FIELDS  \
+    X( fog              )     \
+    X( haze             )     \
+    X( force            )     \
+    X( inertia          )     \
+    X( joint            )     \
+    X( actuator         )     \
+    X( actuatornegative )     \
+    X( actuatorpositive )     \
+    X( com              )     \
+    X( camera           )     \
+    X( light            )     \
+    X( selectpoint      )     \
+    X( connect          )     \
+    X( contactpoint     )     \
+    X( contactforce     )     \
+    X( contactfriction  )     \
+    X( contacttorque    )     \
+    X( contactgap       )     \
+    X( rangefinder      )     \
+    X( constraint       )     \
+    X( slidercrank      )     \
+    X( crankbroken      )     \
+    X( frustum          )     \
+    X( bv               )     \
+    X( bvactive         )
 
 
 //-------------------------------- mjModel ---------------------------------------------------------
 
-// int fields of mjModel
-#define MJMODEL_INTS        \
+// size fields of mjModel
+#define MJMODEL_SIZES       \
     X( nq )                 \
     X( nv )                 \
     X( nu )                 \
@@ -96,6 +189,8 @@
     X( nflexshelldata )     \
     X( nflexevpair )        \
     X( nflextexcoord )      \
+    X( nJfe )               \
+    X( nJfv )               \
     X( nmesh )              \
     X( nmeshvert )          \
     X( nmeshnormal )        \
@@ -120,6 +215,7 @@
     X( nexclude )           \
     X( neq )                \
     X( ntendon )            \
+    X( nJten )              \
     X( nwrap )              \
     X( nsensor )            \
     X( nnumeric )           \
@@ -151,6 +247,7 @@
     X( nuserdata )          \
     X( nsensordata )        \
     X( npluginstate )       \
+    X( nhistory )           \
     X( narena )             \
     X( nbuffer )
 
@@ -302,10 +399,11 @@
     X   ( mjtNum,  cam_poscom0,           ncam,          3                    ) \
     X   ( mjtNum,  cam_pos0,              ncam,          3                    ) \
     X   ( mjtNum,  cam_mat0,              ncam,          9                    ) \
-    X   ( int,     cam_orthographic,      ncam,          1                    ) \
+    X   ( int,     cam_projection,        ncam,          1                    ) \
     X   ( mjtNum,  cam_fovy,              ncam,          1                    ) \
     X   ( mjtNum,  cam_ipd,               ncam,          1                    ) \
     X   ( int,     cam_resolution,        ncam,          2                    ) \
+    X   ( int,     cam_output,            ncam,          1                    ) \
     X   ( float,   cam_sensorsize,        ncam,          2                    ) \
     X   ( float,   cam_intrinsic,         ncam,          4                    ) \
     X   ( mjtNum,  cam_user,              ncam,          MJ_M(nuser_cam)      )
@@ -369,6 +467,9 @@
     X   ( int,     flex_texcoordadr,      nflex,         1                    ) \
     X   ( int,     flex_nodebodyid,       nflexnode,     1                    ) \
     X   ( int,     flex_vertbodyid,       nflexvert,     1                    ) \
+    X   ( int,     flex_vertedgeadr,      nflexvert,     1                    ) \
+    X   ( int,     flex_vertedgenum,      nflexvert,     1                    ) \
+    X   ( int,     flex_vertedge,         nflexedge,     2                    ) \
     X   ( int,     flex_edge,             nflexedge,     2                    ) \
     X   ( int,     flex_edgeflap,         nflexedge,     2                    ) \
     X   ( int,     flex_elem,             nflexelemdata, 1                    ) \
@@ -379,23 +480,31 @@
     X   ( int,     flex_evpair,           nflexevpair,   2                    ) \
     X   ( mjtNum,  flex_vert,             nflexvert,     3                    ) \
     X   ( mjtNum,  flex_vert0,            nflexvert,     3                    ) \
+    X   ( mjtNum,  flex_vertmetric,       nflexvert,     4                    ) \
     X   ( mjtNum,  flex_node,             nflexnode,     3                    ) \
     X   ( mjtNum,  flex_node0,            nflexnode,     3                    ) \
     X   ( mjtNum,  flexedge_length0,      nflexedge,     1                    ) \
     X   ( mjtNum,  flexedge_invweight0,   nflexedge,     1                    ) \
     X   ( mjtNum,  flex_radius,           nflex,         1                    ) \
+    X   ( mjtNum,  flex_size,             nflex,         3                    ) \
     X   ( mjtNum,  flex_stiffness,        nflexelem,     21                   ) \
     X   ( mjtNum,  flex_bending,          nflexedge,     17                   ) \
     X   ( mjtNum,  flex_damping,          nflex,         1                    ) \
     X   ( mjtNum,  flex_edgestiffness,    nflex,         1                    ) \
     X   ( mjtNum,  flex_edgedamping,      nflex,         1                    ) \
-    X   ( mjtByte, flex_edgeequality,     nflex,         1                    ) \
+    X   ( int,     flex_edgeequality,     nflex,         1                    ) \
     X   ( mjtByte, flex_rigid,            nflex,         1                    ) \
     X   ( mjtByte, flexedge_rigid,        nflexedge,     1                    ) \
     X   ( mjtByte, flex_centered,         nflex,         1                    ) \
     X   ( mjtByte, flex_flatskin,         nflex,         1                    ) \
     X   ( int,     flex_bvhadr,           nflex,         1                    ) \
     X   ( int,     flex_bvhnum,           nflex,         1                    ) \
+    X   ( int,     flexedge_J_rownnz,     nflexedge,     1                    ) \
+    X   ( int,     flexedge_J_rowadr,     nflexedge,     1                    ) \
+    X   ( int,     flexedge_J_colind,     nJfe,          1                    ) \
+    X   ( int,     flexvert_J_rownnz,     nflexvert,     2                    ) \
+    X   ( int,     flexvert_J_rowadr,     nflexvert,     2                    ) \
+    X   ( int,     flexvert_J_colind,     nJfv,          2                    ) \
     X   ( float,   flex_rgba,             nflex,         4                    ) \
     X   ( float,   flex_texcoord,         nflextexcoord, 2                    )
 
@@ -472,7 +581,7 @@
     X   ( int,     tex_height,            ntex,          1                    ) \
     X   ( int,     tex_width,             ntex,          1                    ) \
     X   ( int,     tex_nchannel,          ntex,          1                    ) \
-    X   ( int,     tex_adr,               ntex,          1                    ) \
+    X   ( mjtSize, tex_adr,               ntex,          1                    ) \
     XNV ( mjtByte, tex_data,              ntexdata,      1                    ) \
     X   ( int,     tex_pathadr,           ntex,          1                    )
 
@@ -520,6 +629,9 @@
     X   ( int,     tendon_group,          ntendon,       1                    ) \
     X   ( int,     tendon_treenum,        ntendon,       1                    ) \
     X   ( int,     tendon_treeid,         ntendon,       2                    ) \
+    X   ( int,     ten_J_rownnz,          ntendon,       1                    ) \
+    X   ( int,     ten_J_rowadr,          ntendon,       1                    ) \
+    X   ( int,     ten_J_colind,          nJten,         1                    ) \
     X   ( mjtByte, tendon_limited,        ntendon,       1                    ) \
     X   ( mjtByte, tendon_actfrclimited,  ntendon,       1                    ) \
     X   ( mjtNum,  tendon_width,          ntendon,       1                    ) \
@@ -549,6 +661,9 @@
     X   ( int,     actuator_actadr,       nu,            1                    ) \
     X   ( int,     actuator_actnum,       nu,            1                    ) \
     X   ( int,     actuator_group,        nu,            1                    ) \
+    X   ( int,     actuator_history,      nu,            2                    ) \
+    X   ( int,     actuator_historyadr,   nu,            1                    ) \
+    X   ( mjtNum,  actuator_delay,        nu,            1                    ) \
     X   ( mjtByte, actuator_ctrllimited,  nu,            1                    ) \
     X   ( mjtByte, actuator_forcelimited, nu,            1                    ) \
     X   ( mjtByte, actuator_actlimited,   nu,            1                    ) \
@@ -580,6 +695,10 @@
     X   ( int,     sensor_adr,            nsensor,       1                    ) \
     X   ( mjtNum,  sensor_cutoff,         nsensor,       1                    ) \
     X   ( mjtNum,  sensor_noise,          nsensor,       1                    ) \
+    X   ( int,     sensor_history,        nsensor,       2                    ) \
+    X   ( int,     sensor_historyadr,     nsensor,       1                    ) \
+    X   ( mjtNum,  sensor_delay,          nsensor,       1                    ) \
+    X   ( mjtNum,  sensor_interval,       nsensor,       2                    ) \
     X   ( mjtNum,  sensor_user,           nsensor,       MJ_M(nuser_sensor)   ) \
     X   ( int,     sensor_plugin,         nsensor,       1                    )
 
@@ -682,11 +801,6 @@
 
 //-------------------------------- mjData ----------------------------------------------------------
 
-// define symbols needed in MJDATA_POINTERS (corresponding to number of columns)
-#define MJDATA_POINTERS_PREAMBLE( m ) \
-    int nv = m->nv;
-
-
 // pointer fields of mjData
 // XNV means that the field is not required to construct mjvScene
 // (by default we define XNV to be the same as X)
@@ -694,6 +808,7 @@
     X   ( mjtNum,    qpos,              nq,          1           ) \
     X   ( mjtNum,    qvel,              nv,          1           ) \
     X   ( mjtNum,    act,               na,          1           ) \
+    X   ( mjtNum,    history,           nhistory,    1           ) \
     X   ( mjtNum,    qacc_warmstart,    nv,          1           ) \
     X   ( mjtNum,    plugin_state,      npluginstate, 1          ) \
     X   ( mjtNum,    ctrl,              nu,          1           ) \
@@ -729,18 +844,14 @@
     X   ( mjtNum,    cinert,            nbody,       10          ) \
     X   ( mjtNum,    flexvert_xpos,     nflexvert,   3           ) \
     X   ( mjtNum,    flexelem_aabb,     nflexelem,   6           ) \
-    X   ( int,       flexedge_J_rownnz, nflexedge,   1           ) \
-    X   ( int,       flexedge_J_rowadr, nflexedge,   1           ) \
-    X   ( int,       flexedge_J_colind, nflexedge,   MJ_M(nv)    ) \
-    X   ( mjtNum,    flexedge_J,        nflexedge,   MJ_M(nv)    ) \
+    X   ( mjtNum,    flexedge_J,        nJfe,        1           ) \
     X   ( mjtNum,    flexedge_length,   nflexedge,   1           ) \
+    X   ( mjtNum,    flexvert_J,        nJfv,        2           ) \
+    X   ( mjtNum,    flexvert_length,   nflexvert,   2           ) \
     X   ( mjtNum,    bvh_aabb_dyn,      nbvhdynamic, 6           ) \
     X   ( int,       ten_wrapadr,       ntendon,     1           ) \
     X   ( int,       ten_wrapnum,       ntendon,     1           ) \
-    X   ( int,       ten_J_rownnz,      ntendon,     1           ) \
-    X   ( int,       ten_J_rowadr,      ntendon,     1           ) \
-    X   ( int,       ten_J_colind,      ntendon,     MJ_M(nv)    ) \
-    X   ( mjtNum,    ten_J,             ntendon,     MJ_M(nv)    ) \
+    X   ( mjtNum,    ten_J,             nJten,       1           ) \
     X   ( mjtNum,    ten_length,        ntendon,     1           ) \
     X   ( int,       wrap_obj,          nwrap,       2           ) \
     X   ( mjtNum,    wrap_xpos,         nwrap,       6           ) \
@@ -902,6 +1013,10 @@
     X( int,       nbody_awake        ) \
     X( int,       nparent_awake      ) \
     X( int,       nv_awake           ) \
+    X( mjtByte,   flg_energypos      ) \
+    X( mjtByte,   flg_energyvel      ) \
+    X( mjtByte,   flg_subtreevel     ) \
+    X( mjtByte,   flg_rnepost        ) \
     X( mjtNum,    time               ) \
     X( uintptr_t, threadpool         )
 

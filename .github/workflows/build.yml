@@ -114,6 +114,8 @@ jobs:
               -G Ninja
               -DCMAKE_C_COMPILER:STRING=clang-13
               -DCMAKE_CXX_COMPILER:STRING=clang++-13
+              -DCMAKE_EXE_LINKER_FLAGS:STRING=-rtlib=compiler-rt
+              -DCMAKE_SHARED_LINKER_FLAGS:STRING=-rtlib=compiler-rt
               -DMUJOCO_HARDEN:BOOL=ON
             tmpdir: "/tmp"
           - os: macos-15
@@ -379,20 +381,12 @@ jobs:
       if: ${{ runner.os == 'Linux' }}
       run: bash ./.github/workflows/build_steps.sh prepare_linux
 
-    - name: Configure Studio with legacy OpenGL rendering
-      env:
-        CMAKE_ARGS: ${{ matrix.cmake_args }}
-      run: bash ./.github/workflows/build_steps.sh configure_studio_legacy_opengl
-
-    - name: Build Studio with legacy OpenGL rendering
-      run: bash ./.github/workflows/build_steps.sh build_studio
-
-    - name: Configure Studio with Filament rendering
+    - name: Configure Studio
       env:
         CMAKE_ARGS: ${{ matrix.cmake_args }}
       run: bash ./.github/workflows/build_steps.sh configure_studio
 
-    - name: Build Studio with Filament rendering
+    - name: Build Studio
       run: bash ./.github/workflows/build_steps.sh build_studio
 
     - name: Notify team chat

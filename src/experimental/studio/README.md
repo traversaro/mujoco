@@ -14,8 +14,8 @@ directory. Then follow the printed instructions to run the executable.
 bash build.sh
 ```
 
-> [!NOTE] For now [`build.sh`](build.sh) script works on windows in a git bash
-> shell.
+> [!NOTE]
+> For now [`build.sh`](build.sh) script works on windows in a git bash shell.
 
 ## Development
 
@@ -31,24 +31,6 @@ If you intend to develop the application you may prefer to work from an IDE:
 
 * [Visual Studio](https://visualstudio.microsoft.com/). Follow these
   [instructions](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170).
-
-## Filament Rendering
-
-Studio uses legacy OpenGL rendering by default but there is an option to use
-Physically Based Rendering via [Filament](https://google.github.io/filament/Filament.md.html).
-To enable Filament you need to `-DMUJOCO_USE_FILAMENT=ON` during the cmake
-configuration step. The Filament renderer has multiple rendering backends,
-on Linux OpenGL is the default but Vulkan can be used by also providing
-the `-DMUJOCO_USE_FILAMENT_VULKAN=ON` option.
-
-Also note that you will need to run the application from the folder containing
-the executable so that the expected materials/assets can be found.
-
-> [!WARNING] Filament rendering currently supported on Linux. We are actively
-> working on bugs and build issues we've encountered on MacOS and Windows.
-> Contributions improving support on those platforms are very welcome, your
-> fixes may need to be applied in the upstream [Filament](https://github.com/google/filament)
-> GitHub repository.
 
 ## Known Bugs
 

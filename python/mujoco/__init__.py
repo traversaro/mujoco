@@ -56,11 +56,23 @@ from mujoco._constants import *
 from mujoco._enums import *
 from mujoco._errors import *
 from mujoco._functions import *
-from mujoco._render import *
 from mujoco._specs import *
 from mujoco._structs import *
-from mujoco.gl_context import *
-from mujoco.renderer import Renderer
+
+try:
+  from mujoco._render import *  # pytype: disable=import-error
+except ImportError:
+  pass
+
+try:
+  from mujoco.rendering.classic.renderer import Renderer  # pytype: disable=import-error
+except ImportError:
+  pass
+
+try:
+  from mujoco.rendering.classic.gl_context import *  # pytype: disable=import-error
+except ImportError:
+  pass
 
 MjStruct: TypeAlias = Union[
     _specs.MjsBody,

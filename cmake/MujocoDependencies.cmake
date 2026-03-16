@@ -38,16 +38,13 @@ set(MUJOCO_DEP_VERSION_qhull
     62ccc56af071eaa478bef6ed41fd7a55d3bb2d80
     CACHE STRING "Version of `qhull` to be fetched."
 )
-# TODO(matijak): Update this commit only after google's version of Eigen version
-# is updated to include a fix to https://gitlab.com/libeigen/eigen/-/issues/2986
-# which is causing build errors in CI when using MSVC.
 set(MUJOCO_DEP_VERSION_Eigen3
-    4be7e6b4e0a82853e853c0c7c4ef72f395e1f497
+    75bcd155c40cb48e647c87c3f29052360255bc9e
     CACHE STRING "Version of `Eigen3` to be fetched."
 )
 
 set(MUJOCO_DEP_VERSION_abseil
-    d38452e1ee03523a208362186fd42248ff2609f6 # LTS 20250814.1
+    255c84dadd029fd8ad25c5efb5933e47beaa00c7 # LTS 20250814.1
     CACHE STRING "Version of `abseil` to be fetched."
 )
 
@@ -57,13 +54,8 @@ set(MUJOCO_DEP_VERSION_gtest
 )
 
 set(MUJOCO_DEP_VERSION_benchmark
-    5f7d66929fb66869d96dfcbacf0d8a586b33766d
+    5c55f5d4f45a1b09c5d98aa63a671993ebd42c69
     CACHE STRING "Version of `benchmark` to be fetched."
-)
-
-set(MUJOCO_DEP_VERSION_TriangleMeshDistance
-    2cb643de1436e1ba8e2be49b07ec5491ac604457
-    CACHE STRING "Version of `TriangleMeshDistance` to be fetched."
 )
 
 mark_as_advanced(MUJOCO_DEP_VERSION_lodepng)
@@ -76,7 +68,6 @@ mark_as_advanced(MUJOCO_DEP_VERSION_Eigen3)
 mark_as_advanced(MUJOCO_DEP_VERSION_abseil)
 mark_as_advanced(MUJOCO_DEP_VERSION_gtest)
 mark_as_advanced(MUJOCO_DEP_VERSION_benchmark)
-mark_as_advanced(MUJOCO_DEP_VERSION_TriangleMeshDistance)
 
 include(FetchContent)
 include(FindOrFetch)
@@ -205,30 +196,6 @@ if(CMAKE_POLICY_VERSION_MINIMUM_LOCALLY_DEFINED)
   unset(CMAKE_POLICY_VERSION_MINIMUM_LOCALLY_DEFINED)
 endif()
 
-if(NOT TARGET trianglemeshdistance)
-  FetchContent_Declare(
-    trianglemeshdistance
-    GIT_REPOSITORY https://github.com/InteractiveComputerGraphics/TriangleMeshDistance.git
-    GIT_TAG ${MUJOCO_DEP_VERSION_TriangleMeshDistance}
-  )
-
-  FetchContent_GetProperties(trianglemeshdistance)
-  if(NOT trianglemeshdistance_POPULATED)
-    FetchContent_Populate(trianglemeshdistance)
-    # Patch the source code to silence a warning/error related to a loop variable creating a copy.
-    # Since this is a header only library this fix is less intrusive than disabling the warning for
-    # any target including the header.
-    set(TMD_HEADER ${trianglemeshdistance_SOURCE_DIR}/TriangleMeshDistance/include/tmd/TriangleMeshDistance.h)
-    file(READ ${TMD_HEADER} TMD_CONTENT)
-    string(REPLACE
-      "for (const auto edge_count : edges_count) {"
-      "for (const auto& edge_count : edges_count) {"
-      TMD_CONTENT "${TMD_CONTENT}")
-    file(WRITE ${TMD_HEADER} "${TMD_CONTENT}")
-    include_directories(${trianglemeshdistance_SOURCE_DIR})
-  endif()
-endif()
-
 set(ENABLE_DOUBLE_PRECISION ON)
 set(CCD_HIDE_ALL_SYMBOLS ON)
 
@@ -342,9 +309,7 @@ if(MUJOCO_BUILD_TESTS)
         "sed"
         "-i"
         "-e"
-        "s/-std=c++11/-std=c++14/g"
-        "-e"
-        "s/HAVE_CXX_FLAG_STD_CXX11/HAVE_CXX_FLAG_STD_CXX14/g"
+        "s/-Wformat=2/-Wformat/g"
         "${CMAKE_BINARY_DIR}/_deps/benchmark-src/CMakeLists.txt"
     )
   endif()

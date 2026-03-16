@@ -120,7 +120,7 @@ SceneView::SceneView(filament::Engine* engine, ObjectManager* object_mgr)
 
   auto ao = views_[kNormalIndex]->getAmbientOcclusionOptions();
   ao.enabled = ReadElement(m, "filament.ao.enabled", true);
-  ao.bentNormals = ReadElement(m, "filament.ao.bent_normals", true);
+  ao.bentNormals = ReadElement(m, "filament.ao.bent_normals", false);
   ao.ssct.enabled = ReadElement(m, "filament.ao.ssct", ao.ssct.enabled);
   ao.quality = filament::QualityLevel::ULTRA;
   ao.lowPassFilter = filament::QualityLevel::ULTRA;
@@ -131,6 +131,15 @@ SceneView::SceneView(filament::Engine* engine, ObjectManager* object_mgr)
   auto msaa = views_[kNormalIndex]->getMultiSampleAntiAliasingOptions();
   msaa.enabled = ReadElement(m, "filament.msaa.enabled", true);
   views_[kNormalIndex]->setMultiSampleAntiAliasingOptions(msaa);
+
+  default_shadow_map_size_ = ReadElement(
+      m, "filament.shadows.map_size", default_shadow_map_size_);
+  default_vsm_blur_width_ = ReadElement(
+      m, "filament.shadows.vsm_blur_width", default_vsm_blur_width_);
+
+  auto shadow_type = views_[kNormalIndex]->getShadowType();
+  shadow_type = ReadElement(m, "filament.shadows.type", shadow_type);
+  views_[kNormalIndex]->setShadowType(shadow_type);
 
   // Disable post processing for the depth and segmentation views to preserve
   // the values.
@@ -165,6 +174,16 @@ SceneView::SceneView(filament::Engine* engine, ObjectManager* object_mgr)
   fog_opts.inScatteringSize = ReadElement(
       m, "filament.fog.inScatteringSize", fog_opts.inScatteringSize);
   views_[kNormalIndex]->setFogOptions(fog_opts);
+
+  fallback_head_light_intensity_ =
+      ReadElement(m, "filament.fallback.head_light_intensity",
+                  fallback_head_light_intensity_);
+  fallback_scene_light_intensity_ =
+      ReadElement(m, "filament.fallback.scene_light_intensity",
+                  fallback_scene_light_intensity_);
+  fallback_environment_light_intensity_ =
+      ReadElement(m, "filament.fallback.environment_light_intensity",
+                  fallback_environment_light_intensity_);
 
   // Create an empty/black indirect light to ensure that the skybox is oriented
   // to respect mujoco's Z-up convention.
@@ -280,11 +299,17 @@ void SceneView::PrepareLights() {
       params.bulbradius = model->light_bulbradius[i];
       params.range = model->light_range[i];
       params.intensity = model->light_intensity[i];
+      params.shadow_map_size = default_shadow_map_size_;
+      params.vsm_blur_width = default_vsm_blur_width_;
       if (params.type == mjLIGHT_SPOT) {
         params.spot_cone_angle = model->light_cutoff[i];
       }
+
       auto light_obj = std::make_unique<Light>(object_mgr_, params);
+#ifndef __EMSCRIPTEN__
+      // TODO(b/458045799): Re-enable when lights work on glinux and chromebook.
       light_obj->AddToScene(scene_);
+#endif
       lights_.emplace_back(std::move(light_obj));
     }
   }
@@ -310,15 +335,13 @@ void SceneView::PrepareLights() {
   // dealing with a "classic renderer" scene. In this case, let's add a
   // default environment light and set the light intensity ourselves.
   if (total_light_intensity == 0.0f) {
-    constexpr float kHeadlightIntensityCandela = 10'000.f;
-    constexpr float kTotalSceneLightIntensityCandela = 100'000.f;
-    constexpr float kFallbackEnvironmentLightIntensityCandela = 10'000.f;
-
-    SetFallbackEnvironmentLight(kFallbackEnvironmentLightIntensityCandela);
-    const float intensity = kTotalSceneLightIntensityCandela / lights_.size();
+    SetFallbackEnvironmentLight(fallback_environment_light_intensity_);
+    const float intensity = fallback_scene_light_intensity_ / lights_.size();
     for (auto& light : lights_) {
-      light->SetIntensity(light->IsHeadlight() ? kHeadlightIntensityCandela
-                                               : intensity);
+      if (light) {
+        light->SetIntensity(
+            light->IsHeadlight() ? fallback_head_light_intensity_ : intensity);
+      }
     }
   }
 }
@@ -369,9 +392,11 @@ void SceneView::UpdateScene(const mjrContext* context, const mjvScene* scene) {
       continue;
     } else if (scene_light.id < lights_.size() - 1) {
       std::unique_ptr<Light>& light = lights_[scene_light.id];
-      light->SetColor(ReadFloat3(scene_light.diffuse));
-      light->SetTransform(ReadFloat3(scene_light.pos),
-                          ReadFloat3(scene_light.dir));
+      if (light) {
+        light->SetColor(ReadFloat3(scene_light.diffuse));
+        light->SetTransform(ReadFloat3(scene_light.pos),
+                            ReadFloat3(scene_light.dir));
+      }
     } else {
       mju_error("Unexpected light id: %d", scene_light.id);
     }

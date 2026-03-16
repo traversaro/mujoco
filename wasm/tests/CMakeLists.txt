@@ -14,8 +14,6 @@
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/wasm/dist")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++20 -O3")
-
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/wasm)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
@@ -33,11 +31,11 @@ if(NOT MUJOCO_WASM_FILES)
     message(FATAL_ERROR "No source files found")
 endif()
 
-add_compile_options(-pthread)
-
 # Set Emscripten linker flags
 set(EMCC_LINKER_FLAGS
     "--bind"
+    "-pthread"
+    "-s PTHREAD_POOL_SIZE=navigator.hardwareConcurrency"
     "-s ASSERTIONS=1"
     "-s ALLOW_MEMORY_GROWTH=1"
     "-s EXPORT_ES6=1"
@@ -55,6 +53,6 @@ add_executable(mujoco_wasm_benchmark ${MUJOCO_WASM_FILES})
 
 set_target_properties(mujoco_wasm_benchmark PROPERTIES LINK_FLAGS "${EMCC_LINKER_FLAGS_STR}")
 
-target_link_libraries(mujoco_wasm_benchmark ccd lodepng mujoco tinyxml2 qhullstatic_r)
+target_link_libraries(mujoco_wasm_benchmark ccd lodepng mujoco tinyxml2 qhullstatic_r obj_decoder stl_decoder)
 
 install(TARGETS mujoco_wasm_benchmark DESTINATION ${DIVISIBLE_INSTALL_BIN_DIR})

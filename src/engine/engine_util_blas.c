@@ -46,10 +46,17 @@ int mju_equal3(const mjtNum vec1[3], const mjtNum vec2[3]) {
 
 
 // res = vec
-void mju_copy3(mjtNum res[3], const mjtNum data[3]) {
-  res[0] = data[0];
-  res[1] = data[1];
-  res[2] = data[2];
+void mju_copy3(mjtNum res[3], const mjtNum vec[3]) {
+  res[0] = vec[0];
+  res[1] = vec[1];
+  res[2] = vec[2];
+}
+
+// res = mat
+void mju_copy9(mjtNum res[9], const mjtNum mat[9]) {
+  res[0] = mat[0];  res[1] = mat[1];  res[2] = mat[2];
+  res[3] = mat[3];  res[4] = mat[4];  res[5] = mat[5];
+  res[6] = mat[6];  res[7] = mat[7];  res[8] = mat[8];
 }
 
 
@@ -671,16 +678,13 @@ void mju_addScl(mjtNum* res, const mjtNum* vec1, const mjtNum* vec2, mjtNum scl,
 
 // normalize vector, return length before normalization
 mjtNum mju_normalize(mjtNum* res, int n) {
-  mjtNum norm = (mjtNum)mju_sqrt(mju_dot(res, res, n));
-  mjtNum normInv;
+  mjtNum norm = mju_sqrt(mju_dot(res, res, n));
 
   if (norm < mjMINVAL) {
     res[0] = 1;
-    for (int i=1; i < n; i++) {
-      res[i] = 0;
-    }
+    mju_zero(res + 1, n - 1);
   } else {
-    normInv = 1/norm;
+    mjtNum normInv = 1 / norm;
     for (int i=0; i < n; i++) {
       res[i] *= normInv;
     }

@@ -60,6 +60,7 @@ class ObjectManager {
     kLine,
     kLineBox,
     kPlane,
+    kTriangle,
     kBox,
     kSphere,
     kCone,
@@ -77,8 +78,6 @@ class ObjectManager {
 
   void UploadHeightField(const mjModel* model, int id);
 
-  void UploadFont(const uint8_t* pixels, int width, int height, int id);
-
   // Returns the filament engine used by the ObjectManager to create filament
   // objects.
   filament::Engine* GetEngine() const { return engine_; }
@@ -89,7 +88,6 @@ class ObjectManager {
   const FilamentBuffers* GetMeshBuffer(int data_id) const;
   const FilamentBuffers* GetShapeBuffer(ShapeType shape) const;
   const FilamentBuffers* GetHeightFieldBuffer(int hfield_id) const;
-  const filament::Texture* GetFont(int font_id) const;
   const filament::Texture* GetTexture(int tex_id) const;
   const filament::Texture* GetTexture(int mat_id, int role) const;
   const filament::Texture* GetTextureWithFallback(int mat_id, int role) const;
@@ -105,6 +103,10 @@ class ObjectManager {
   filament::IndirectLight* CreateIndirectLight(int tex_id, float intensity);
   filament::IndirectLight* LoadFallbackIndirectLight(std::string_view filename,
                                                      float intensity);
+
+  float GetSpecularMultiplier() const { return specular_multiplier_; }
+  float GetShininessMultiplier() const { return shininess_multiplier_; }
+  float GetEmissiveMultiplier() const { return emissive_multiplier_; }
 
   const mjModel* GetModel() const { return model_; }
 
@@ -123,7 +125,6 @@ class ObjectManager {
   std::unordered_map<int, FilamentBuffers> meshes_;
   std::unordered_map<int, FilamentBuffers> convex_hulls_;
   std::unordered_map<int, FilamentBuffers> height_fields_;
-  std::unordered_map<int, filament::Texture*> fonts_;
   std::unordered_map<int, filament::Texture*> textures_;
   std::unordered_map<int, SphericalHarmonics> spherical_harmonics_;
   std::unordered_map<int, filament::Texture*> fallback_textures_;
@@ -132,6 +133,9 @@ class ObjectManager {
   filament::Texture* fallback_normal_ = nullptr;
   filament::Texture* fallback_orm_ = nullptr;
   filament::IndirectLight* fallback_indirect_light_ = nullptr;
+  float specular_multiplier_ = 0.2f;
+  float shininess_multiplier_ = 0.1f;
+  float emissive_multiplier_ = 0.3f;
 };
 
 }  // namespace mujoco

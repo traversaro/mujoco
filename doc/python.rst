@@ -654,6 +654,17 @@ The :ref:`mjsMesh` object includes convenience methods for model creation with n
    mesh = spec.add_mesh(name='prism')
    mesh.make_cone(nedge=5, radius=1)
 
+Texture editing
+^^^^^^^^^^^^^^^
+The :ref:`mjsTexture` buffer option stores the texture bytes in the ``data`` attribute. This attribute can be read and
+modified, for example:
+
+.. code-block:: python
+
+  texture = spec.add_texture(name='texture', height=1, width=3, nchannel=3)
+  texture.data = bytes([255, 0, 0, 0, 255, 0, 0, 0, 255])  # Assign red, green and blue pixels.
+  texture.data[1] = 255  # Change the first pixel to yellow.
+
 .. _PyMJCF:
 
 Relationship to ``PyMJCF`` and ``bind``
@@ -814,9 +825,9 @@ The basic usage form is
 - ``data`` is either a single instance of MjData or a sequence of compatible MjDatas of length ``nthread``.
 - ``initial_state`` is an ``nbatch x nstate`` array, with ``nbatch`` initial states of size ``nstate``, where
   ``nstate = mj_stateSize(model, mjtState.mjSTATE_FULLPHYSICS)`` is the size of the
-  :ref:`full physics state<geFullPhysics>`.
+  :ref:`full physics state<siFullPhysics>`.
 - ``control`` is a ``nbatch x nstep x ncontrol`` array of controls. Controls are by default the ``mjModel.nu`` standard
-  actuators, but any combination of :ref:`user input<geInput>` arrays can be specified by passing an optional
+  actuators, but any combination of :ref:`user input<siInput>` arrays can be specified by passing an optional
   ``control_spec`` bitflag.
 
 If a rollout diverges, the current state and sensor values are used to fill the remainder of the trajectory.
@@ -911,7 +922,7 @@ custom cameras and lights. The constructor arguments of a ``USDExporter`` instan
 - ``model``: An MjModel instance. The USD exporter reads relevant information from the model including details about
   cameras, lights, textures, and object geometries.
 
-- ``max_geom``: Maximum number of geoms in a scene, required when instatiating the internal .
+- ``max_geom``: Maximum number of geoms in a scene, required when instantiating the internal .
   `mjvScene <https://mujoco.readthedocs.io/en/stable/APIreference/APItypes.html#mjvscene>`__.
 
 - ``output_directory``: Name of the directory under which the exported USD file and all relevant
@@ -1073,7 +1084,7 @@ non-exhaustive list of specific mujoco-py features:
    The MuJoCo library’s computation is deterministic given a specific input, as explained in the :ref:`Programming
    section <Simulation>`. mujoco-py implements methods for getting and setting some of the relevant fields (and
    similarly ``dm_control.Physics`` offers methods that correspond to the flattened case). This functionality is
-   described in the :ref:`state <geState>` section.
+   described in the :ref:`State and Control<siStateControl>` section.
 
 ``sim.model.get_joint_qvel_addr(joint_name)``
    This is a convenience method in mujoco-py that returns a list of contiguous indices corresponding to this joint. The

@@ -117,7 +117,7 @@ target directory.
 **Notes:**
 
 - When building on Windows, use Visual Studio 2019 or later and make sure Windows SDK version 10.0.22000 or later is
-  installed (see :github:issue:`862` for more details).
+  installed (see :issue:`862` for more details).
 - To optimize runtime performance build with ``-DCMAKE_BUILD_TYPE=Release``
 
 .. tip::
@@ -191,7 +191,7 @@ Versions and compatibility
 
 MuJoCo has been used extensively since 2010 and is quite mature (even though our version numbering scheme is quite
 conservative). Nevertheless it remains under active development, and we have many exciting ideas for new features and
-are also making changes based on user feedback. This leads to unavoidable changes in both the modeling language in the
+are also making changes based on user feedback. This leads to unavoidable changes in both the modeling language and the
 API. While we encourage users to upgrade to the latest version, we recognize that this is not always feasible,
 especially when other developers release software that relies on MuJoCo. Therefore we have introduced simple
 mechanisms to help avoid version conflicts, as follows.
@@ -200,19 +200,20 @@ The situation is more subtle if existing code was developed with a certain versi
 compiled and linked with a different version. If the definitions of the API functions used in that code have changed,
 either the compiler or the linker will generate errors. But even if the function definitions have not changed, it may
 still be a good idea to assert that the software version is the same. To this end, the main header (mujoco.h) defines
-the symbol :ref:`mjVERSION_HEADER <glNumeric>` and the library provides the function
+the symbol :ref:`mjVERSION_HEADER <glNumericVersion>` and the library provides the function
 :ref:`mj_version`. Thus the header and library versions can be compared with:
 
 .. code-block:: C
 
    // recommended version check
-   if (mjVERSION_HEADER!=mj_version())
+   if (mjVERSION_HEADER != mj_version())
      complain();
 
 Note that only the main header defines this symbol. We assume that the collection of headers released with each software
 version will stay together and will not be mixed between versions. To avoid complications with floating-point
-comparisons, the above symbol and function use integers that are 100x the version number, so for example in software
-version 2.1 the symbol mjVERSION_HEADER is defined as 210.
+comparisons, the above symbol and function use integers rather than floating-point numbers. See
+`VERSIONING.md <https://github.com/google-deepmind/mujoco/blob/main/VERSIONING.md>`__ for the encoding formula and
+version semantics.
 
 .. _inNaming:
 

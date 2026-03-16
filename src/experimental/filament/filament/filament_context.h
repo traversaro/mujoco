@@ -51,34 +51,46 @@ class FilamentContext {
 
   void UploadHeightField(const mjModel* model, int id);
 
-  void UploadFont(const uint8_t* pixels, int width, int height, int id);
+  uintptr_t UploadGuiImage(uintptr_t tex_id, const uint8_t* pixels, int width,
+                           int height, int bpp);
+
+  double GetFrameRate() const;
+
+  void UpdateGui();
 
   FilamentContext(const FilamentContext&) = delete;
   FilamentContext& operator=(const FilamentContext&) = delete;
 
  private:
+  enum SwapChainType {
+    kWindowSwapChain,
+    kOffscreenSwapChain,
+  };
+
   void PrepareRenderTargets(int width, int height);
   void DestroyRenderTargets();
-
-  SceneView* GetSceneView(const mjvScene* scene);
 
   mjrFilamentConfig config_;
   mjrContext* context_ = nullptr;
   const mjModel* model_ = nullptr;
   filament::Engine* engine_ = nullptr;
-  filament::SwapChain* swap_chain_ = nullptr;
+  filament::SwapChain* window_swap_chain_ = nullptr;
+  filament::SwapChain* offscreen_swap_chain_ = nullptr;
   filament::Renderer* renderer_ = nullptr;
   filament::RenderTarget* color_target_ = nullptr;
   filament::RenderTarget* depth_target_ = nullptr;
   filament::Texture* target_textures_[kNumRenderTargetTextureTypes] = {
       nullptr, nullptr, nullptr};
 
-  bool render_to_texture_ = false;
-  bool render_gui_ = false;
+  SceneView::DrawMode last_render_mode_ = SceneView::DrawMode::kNormal;
+  SwapChainType scene_swap_chain_target_ = kWindowSwapChain;
+  SwapChainType gui_swap_chain_target_ = kWindowSwapChain;
 
   std::unique_ptr<ObjectManager> object_manager_;
   std::unique_ptr<SceneView> scene_view_;
   std::unique_ptr<GuiView> gui_view_;
+  int window_width_ = 0;
+  int window_height_ = 0;
 };
 
 }  // namespace mujoco

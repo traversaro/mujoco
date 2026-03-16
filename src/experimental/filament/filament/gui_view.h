@@ -19,6 +19,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <imgui.h>
 #include <filament/Camera.h>
 #include <filament/Engine.h>
 #include <filament/Material.h>
@@ -41,15 +42,24 @@ class GuiView {
   // Prepares the UX scene renderable using data from the current ImGui state.
   // This function must be called once per frame to ensure ImGui state is
   // correctly synced.
-  bool PrepareRenderable();
+  void UpdateRenderable();
 
   // Returns the filament::View used to render the UX scene.
   filament::View* PrepareRenderView();
 
+  // Uploads texture to be used with ImGui's Image and ImageButton functions.
+  uintptr_t UploadImage(uintptr_t tex_id, const uint8_t* pixels, int width,
+                        int height, int bpp);
+
  private:
+  void CreateTexture(ImTextureData* data);
+  void UpdateTexture(ImTextureData* data);
+  void DestroyTexture(ImTextureData* data);
+
   // Returns the filament::MaterialInstance configured to draw into the given
   // scissor rect.
-  filament::MaterialInstance* GetMaterialInstance(int index, mjrRect rect);
+  filament::MaterialInstance* GetMaterialInstance(int index, mjrRect rect,
+                                                  uintptr_t texture_id);
 
   // Clears the filament::Scene of the UX renderable and releases all buffers.
   void ResetRenderable();
@@ -63,6 +73,8 @@ class GuiView {
   utils::Entity renderable_;
   std::vector<FilamentBuffers> buffers_;
   std::vector<filament::MaterialInstance*> instances_;
+  std::unordered_map<uintptr_t, filament::Texture*> textures_;
+  int num_elements_ = 0;
 };
 
 // Draws text at the given screen coordinates in clip space (i.e. [-1,-1,-1] to

@@ -244,7 +244,7 @@ int mj_wake(const mjModel* m, mjData* d) {
   if (!mjENABLED(mjENBL_SLEEP)) {
     // sleep disabled but some trees still asleep: wake all
     if (d->ntree_awake < ntree) {
-      for (int i=0; i < ntree; i++) d->tree_asleep[i] = kAwake;
+      mju_fillInt(d->tree_asleep, kAwake, ntree);
     }
     return ntree - d->ntree_awake;
   }
@@ -399,6 +399,7 @@ int mj_wakeEquality(const mjModel* m, mjData* d) {
       mjERROR("tendon equality does not yet support sleeping");
       continue;
     case mjEQ_FLEX:
+    case mjEQ_FLEXVERT:
       mjERROR("flex equality does not yet support sleeping");
       continue;
     default:
@@ -641,6 +642,7 @@ static mjtSleepState mj_equalitySleepState(const mjModel* m, const mjData* d, in
       objtype = mjOBJ_TENDON;
       break;
     case mjEQ_FLEX:
+    case mjEQ_FLEXVERT:
       objtype = mjOBJ_FLEX;
       break;
     default:
