@@ -178,7 +178,7 @@ if(NOT DEFINED CMAKE_POLICY_VERSION_MINIMUM)
 endif()
 findorfetch(
   USE_SYSTEM_PACKAGE
-  OFF
+  ON
   PACKAGE_NAME
   tinyobjloader
   LIBRARY_NAME

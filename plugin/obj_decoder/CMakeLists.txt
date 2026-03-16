@@ -37,8 +37,6 @@ else()
   )
 endif()
 
-target_compile_definitions(obj_decoder PRIVATE TINYOBJLOADER_IMPLEMENTATION)
-
 target_compile_options(obj_decoder PRIVATE
   ${AVX_COMPILE_OPTIONS}
   ${MUJOCO_MACOS_COMPILE_OPTIONS}
