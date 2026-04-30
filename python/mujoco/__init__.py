@@ -35,7 +35,7 @@ __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
 _SYSTEM = platform.system()
 if _SYSTEM == 'Windows':
-  ctypes.WinDLL(os.path.join(os.path.dirname(__file__), 'mujoco.dll'))
+  ctypes.WinDLL('mujoco.dll'))
 elif _SYSTEM == 'Darwin':
   proc_translated = subprocess.run(
       ['sysctl', '-n', 'sysctl.proc_translated'], capture_output=True).stdout
